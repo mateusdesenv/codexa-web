@@ -62,7 +62,7 @@ function updatePortfolioStack() {
     const z = -abs * 150;
     const rotateX = -9 + distance * -1.25;
     const rotateZ = distance * 5.25;
-    const scale = Math.max(1.20, 1 - abs * 0.045);
+    const scale = Math.max(1.0, 1 - abs * 0.045);
     const opacity = clamp(1 - abs * 0.16, 0.18, 1);
     const brightness = (clamp(1 - abs * 0.18, 0.42, 1)) + 0.8;
     const blur = Math.min(abs * 0.35, 1.6);
