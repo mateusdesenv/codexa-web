@@ -1041,6 +1041,7 @@ a {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: rgba(0, 0, 0, 0.9);
 }
 
 .window-bar a {
@@ -1220,6 +1221,7 @@ a {
 .final-cta {
   margin-bottom: 60px !important;
 }
+
 /* ==============================
    Ajustes mobile - centralização
    Mantém desktop intacto
@@ -1253,7 +1255,7 @@ a {
     height: 38px;
   }
 
-  .brand-logo > span {
+  .brand-logo>span {
     font-size: 19px;
     letter-spacing: .34em;
   }
