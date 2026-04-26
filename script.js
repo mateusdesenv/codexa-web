@@ -1,12 +1,32 @@
 const menuButton = document.querySelector(".menu-button");
 const nav = document.querySelector(".nav");
 
+function setMenuState(isOpen) {
+  if (!menuButton || !nav) return;
+
+  nav.classList.toggle("open", isOpen);
+  menuButton.classList.toggle("active", isOpen);
+  document.body.classList.toggle("menu-open", isOpen);
+  menuButton.setAttribute("aria-expanded", String(isOpen));
+  menuButton.setAttribute("aria-label", isOpen ? "Fechar menu" : "Abrir menu");
+}
+
+menuButton?.setAttribute("aria-expanded", "false");
+
 menuButton?.addEventListener("click", () => {
-  nav.classList.toggle("open");
+  setMenuState(!nav?.classList.contains("open"));
 });
 
 document.querySelectorAll(".nav a").forEach((link) => {
-  link.addEventListener("click", () => nav.classList.remove("open"));
+  link.addEventListener("click", () => setMenuState(false));
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") setMenuState(false);
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 980) setMenuState(false);
 });
 
 const reveals = document.querySelectorAll(".reveal");
