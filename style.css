@@ -908,8 +908,8 @@ a {
 
 /* Portfolio estilo stack scroll-driven */
 .portfolio-cases {
-  margin-top: 72px;
-  height: 400vh;
+  /* margin-top: 72px; */
+  height: 250vh;
   position: relative;
   /* background:
     radial-gradient(circle at 22% 18%, rgba(87,227,75,.13), transparent 24%),
