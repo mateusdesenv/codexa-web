@@ -37,9 +37,12 @@ function clamp(value, min, max) {
 function updatePortfolioStack() {
   if (!portfolioSection || !projectWindows.length) return;
 
+  const SPEED = 1.5; // 👈 50% mais rápido
+
   const rect = portfolioSection.getBoundingClientRect();
   const scrollable = portfolioSection.offsetHeight - window.innerHeight;
-  const progress = clamp(-rect.top / scrollable, 0, 1);
+  // const progress = clamp(-rect.top / scrollable, 0, 1);
+  const progress = clamp((-rect.top / scrollable) * SPEED, 0, 1);
   const activeFloat = progress * (projectWindows.length - 1);
   const activeIndex = Math.round(activeFloat);
 
