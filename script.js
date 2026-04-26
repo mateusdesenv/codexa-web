@@ -37,7 +37,7 @@ function clamp(value, min, max) {
 function updatePortfolioStack() {
   if (!portfolioSection || !projectWindows.length) return;
 
-  const SPEED = 1.5; // 👈 50% mais rápido
+  const SPEED = window.innerWidth < 980 ? 1 : 1; // 👈 50% mais rápido
 
   const rect = portfolioSection.getBoundingClientRect();
   const scrollable = portfolioSection.offsetHeight - window.innerHeight;
