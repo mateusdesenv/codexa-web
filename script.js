@@ -89,7 +89,7 @@ function updatePortfolioStack() {
       const scale = Math.max(0.82, 1 - abs * 0.12);
       const opacity = clamp(1 - abs * 0.42, 0.08, 1);
       const brightness = clamp(1 - abs * 0.2, 0.68, 1);
-      const blur = Math.min(abs * 3.2, 6.5);
+      const blur = Math.min(abs * 1, 2);
 
       card.style.transform = `translate(-50%, -50%) translateY(${y}px) translateZ(${z}px) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg) scale(${scale})`;
       card.style.opacity = opacity;
