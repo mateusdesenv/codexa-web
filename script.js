@@ -128,3 +128,106 @@ function requestPortfolioUpdate() {
 window.addEventListener("scroll", requestPortfolioUpdate, { passive: true });
 window.addEventListener("resize", requestPortfolioUpdate);
 updatePortfolioStack();
+
+/* Animações premium v2 — microinterações seguras */
+document.documentElement.classList.add("js");
+
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+window.addEventListener("load", () => {
+  requestAnimationFrame(() => document.body.classList.add("site-loaded"));
+});
+
+function initScrollProgress() {
+  if (document.querySelector(".scroll-progress")) return;
+
+  const progress = document.createElement("span");
+  progress.className = "scroll-progress";
+  progress.setAttribute("aria-hidden", "true");
+  document.body.appendChild(progress);
+
+  function updateProgress() {
+    const scrollHeight = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+    const amount = window.scrollY / scrollHeight;
+    progress.style.transform = `scaleX(${clamp(amount, 0, 1)})`;
+  }
+
+  window.addEventListener("scroll", updateProgress, { passive: true });
+  window.addEventListener("resize", updateProgress);
+  updateProgress();
+}
+
+function initCursorGlow() {
+  if (prefersReducedMotion.matches) return;
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  if (document.querySelector(".premium-cursor-glow")) return;
+
+  const glow = document.createElement("span");
+  glow.className = "premium-cursor-glow";
+  glow.setAttribute("aria-hidden", "true");
+  document.body.appendChild(glow);
+
+  let targetX = window.innerWidth / 2;
+  let targetY = window.innerHeight / 2;
+  let currentX = targetX;
+  let currentY = targetY;
+  let isRunning = true;
+
+  window.addEventListener("pointermove", (event) => {
+    targetX = event.clientX;
+    targetY = event.clientY;
+  }, { passive: true });
+
+  document.addEventListener("visibilitychange", () => {
+    isRunning = !document.hidden;
+    if (isRunning) renderGlow();
+  });
+
+  function renderGlow() {
+    if (!isRunning) return;
+    currentX += (targetX - currentX) * 0.085;
+    currentY += (targetY - currentY) * 0.085;
+    glow.style.transform = `translate3d(${currentX - 210}px, ${currentY - 210}px, 0)`;
+    requestAnimationFrame(renderGlow);
+  }
+
+  renderGlow();
+}
+
+function initPremiumTilt() {
+  if (prefersReducedMotion.matches) return;
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  const tiltItems = document.querySelectorAll(".service, .about-v2-window, .about-v2-stats article, .final-cta");
+
+  tiltItems.forEach((item) => {
+    item.classList.add("premium-tilt");
+
+    item.addEventListener("pointermove", (event) => {
+      const rect = item.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const rotateY = ((x / rect.width) - 0.5) * 6;
+      const rotateX = -((y / rect.height) - 0.5) * 6;
+
+      item.classList.add("is-tilting");
+      item.style.setProperty("--tilt-rx", `${rotateX.toFixed(2)}deg`);
+      item.style.setProperty("--tilt-ry", `${rotateY.toFixed(2)}deg`);
+      item.style.setProperty("--glow-x", `${((x / rect.width) * 100).toFixed(1)}%`);
+      item.style.setProperty("--glow-y", `${((y / rect.height) * 100).toFixed(1)}%`);
+    });
+
+    item.addEventListener("pointerleave", () => {
+      item.classList.remove("is-tilting");
+      item.style.setProperty("--tilt-rx", "0deg");
+      item.style.setProperty("--tilt-ry", "0deg");
+      item.style.setProperty("--glow-x", "50%");
+      item.style.setProperty("--glow-y", "50%");
+    });
+  });
+}
+
+initScrollProgress();
+initCursorGlow();
+initPremiumTilt();
+

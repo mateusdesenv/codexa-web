@@ -369,6 +369,7 @@ a {
   min-height: 170px;
   padding-left: 52px;
   border-left: 1px solid var(--line-dark);
+  padding: 30px;
 }
 
 .service:first-child {
@@ -2671,3 +2672,512 @@ body.menu-open .whatsapp-float {
     padding-right: 118px;
   }
 }
+
+/* =====================================================
+   Codexa — animações premium v2
+   Header mobile preservado + microinterações refinadas
+===================================================== */
+:root {
+  --ease-premium: cubic-bezier(.16, 1, .3, 1);
+  --ease-smooth: cubic-bezier(.22, 1, .36, 1);
+}
+
+::selection {
+  background: rgba(87, 227, 75, .30);
+  color: #fff;
+}
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(87, 227, 75, .15), var(--green), rgba(255, 255, 255, .85));
+  transform: scaleX(0);
+  transform-origin: left center;
+  box-shadow: 0 0 18px rgba(87, 227, 75, .42);
+  pointer-events: none;
+}
+
+.premium-cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 420px;
+  height: 420px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(87, 227, 75, .085), rgba(87, 227, 75, .025) 36%, transparent 70%);
+  transform: translate3d(-50%, -50%, 0);
+  filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transition: opacity .45s ease;
+}
+
+body.site-loaded .premium-cursor-glow {
+  opacity: 1;
+}
+
+body.site-loaded .header {
+  animation: premiumHeaderInDesktop .8s var(--ease-premium) both;
+}
+
+body.site-loaded .brand-logo img {
+  animation: premiumLogoBreath 6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.hero {
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -120px;
+  top: 8%;
+  width: min(62vw, 540px);
+  height: min(62vw, 540px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(87, 227, 75, .18), transparent 34%),
+    radial-gradient(circle at 65% 75%, rgba(255, 255, 255, .07), transparent 40%);
+  filter: blur(24px);
+  opacity: .68;
+  pointer-events: none;
+  animation: premiumGlowDrift 13s ease-in-out infinite alternate;
+}
+
+.hero-content.reveal.active .label {
+  animation: premiumFadeUp .72s var(--ease-premium) both .04s;
+}
+
+.hero-content.reveal.active h1 {
+  animation: premiumTitleIn .92s var(--ease-premium) both .14s;
+}
+
+.hero-content.reveal.active .subtitle {
+  animation: premiumFadeUp .82s var(--ease-premium) both .28s;
+}
+
+.hero-content.reveal.active .hero-actions {
+  animation: premiumFadeUp .82s var(--ease-premium) both .40s;
+}
+
+.hero-symbol {
+  animation: premiumFloat 7.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.hero-symbol img {
+  animation: premiumSymbolGlow 7s ease-in-out infinite;
+}
+
+.label span {
+  transform-origin: left center;
+}
+
+.reveal.active .label span,
+.hero-content.reveal.active .label span {
+  animation: premiumLineGrow .7s var(--ease-premium) both .18s;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0) scale(.985);
+  filter: blur(10px);
+  transition:
+    opacity .95s var(--ease-premium),
+    transform .95s var(--ease-premium),
+    filter .95s var(--ease-premium);
+  will-change: opacity, transform, filter;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.service-list.reveal.active .service,
+.about-v2-panel.reveal.active .about-v2-window,
+.about-v2-panel.reveal.active .about-v2-stats article {
+  animation: premiumCardIn .8s var(--ease-premium) both;
+}
+
+.service-list.reveal.active .service:nth-child(1) { animation-delay: .04s; }
+.service-list.reveal.active .service:nth-child(2) { animation-delay: .14s; }
+.service-list.reveal.active .service:nth-child(3) { animation-delay: .24s; }
+
+.about-v2-panel.reveal.active .about-v2-window { animation-delay: .06s; }
+.about-v2-panel.reveal.active .about-v2-stats article:nth-child(1) { animation-delay: .24s; }
+.about-v2-panel.reveal.active .about-v2-stats article:nth-child(2) { animation-delay: .34s; }
+.about-v2-panel.reveal.active .about-v2-stats article:nth-child(3) { animation-delay: .44s; }
+
+.service,
+.about-v2-window,
+.about-v2-stats article,
+.final-cta {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.service,
+.about-v2-stats article,
+.final-cta {
+  overflow: hidden;
+}
+
+.service::after,
+.about-v2-stats article::after,
+.final-cta::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  opacity: 0;
+  background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(87, 227, 75, .16), transparent 44%);
+  pointer-events: none;
+  transition: opacity .36s ease;
+}
+
+.service:hover::after,
+.about-v2-stats article:hover::after,
+.final-cta:hover::after {
+  opacity: 1;
+}
+
+.service-icon {
+  transition: transform .44s var(--ease-smooth), background .44s ease, box-shadow .44s ease;
+}
+
+.service:hover .service-icon {
+  transform: translateY(-4px) rotate(-3deg) scale(1.04);
+  background: rgba(31, 207, 72, .10);
+  box-shadow: 0 18px 38px rgba(31, 207, 72, .16);
+}
+
+.service-icon svg {
+  stroke-dasharray: 74;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .75s var(--ease-premium), transform .45s var(--ease-smooth);
+}
+
+.service:hover .service-icon svg {
+  stroke-dashoffset: 148;
+  transform: scale(1.04);
+}
+
+.btn-primary,
+.top-cta,
+.about-v2-primary,
+.final-cta a,
+.text-action,
+.btn-link,
+.about-v2-link,
+.whatsapp-float {
+  will-change: transform;
+}
+
+.btn-primary,
+.top-cta,
+.about-v2-primary,
+.final-cta a {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-primary::before,
+.top-cta::before,
+.about-v2-primary::before,
+.final-cta a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 48%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .36), transparent);
+  transform: skewX(-18deg);
+  transition: left .7s var(--ease-premium);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.btn-primary:hover::before,
+.top-cta:hover::before,
+.about-v2-primary:hover::before,
+.final-cta a:hover::before {
+  left: 130%;
+}
+
+.btn-primary:hover,
+.top-cta:hover,
+.about-v2-primary:hover,
+.final-cta a:hover {
+  transform: translateY(-3px);
+}
+
+.text-action span,
+.btn-link span,
+.about-v2-primary span,
+.final-cta a span,
+.mobile-project-info a span {
+  display: inline-block;
+  transition: transform .32s var(--ease-smooth);
+}
+
+.text-action:hover span,
+.btn-link:hover span,
+.about-v2-primary:hover span,
+.final-cta a:hover span,
+.mobile-project-info a:hover span {
+  transform: translateX(4px);
+}
+
+.about-v2-glow {
+  animation: premiumGlowPulse 7s ease-in-out infinite alternate;
+}
+
+.about-v2-window {
+  overflow: hidden;
+}
+
+.about-v2-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, .075) 18%, transparent 34%);
+  transform: translateX(-120%);
+  opacity: .8;
+  pointer-events: none;
+}
+
+.about-v2-panel.reveal.active .about-v2-window::after {
+  animation: premiumSweep 2.6s var(--ease-premium) both .9s;
+}
+
+.about-v2-code-list div {
+  transition: background .32s ease, transform .32s var(--ease-smooth), border-color .32s ease;
+}
+
+.about-v2-code-list div:hover {
+  transform: translateX(6px);
+  border-color: rgba(87, 227, 75, .18);
+  background: rgba(255, 255, 255, .025);
+}
+
+.portfolio-stage.reveal.active {
+  animation: premiumStageIn .95s var(--ease-premium) both;
+}
+
+.project-window {
+  backface-visibility: hidden;
+}
+
+.project-screen {
+  position: relative;
+  isolation: isolate;
+}
+
+.project-screen picture {
+  position: relative;
+  isolation: isolate;
+}
+
+.project-screen picture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 16%, rgba(255, 255, 255, .13) 42%, transparent 64%);
+  transform: translateX(-130%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.project-window.is-active .project-screen picture::after {
+  animation: premiumScreenSheen 2.2s var(--ease-premium) both;
+}
+
+.whatsapp-float {
+  animation: premiumWhatsappIn .78s var(--ease-premium) both .95s;
+}
+
+.whatsapp-float__icon::after {
+  animation: premiumOnlinePulse 2.2s ease-out infinite;
+}
+
+.premium-tilt {
+  transform: perspective(900px) rotateX(var(--tilt-rx, 0deg)) rotateY(var(--tilt-ry, 0deg));
+  transition: transform .24s var(--ease-smooth), box-shadow .24s ease;
+}
+
+.premium-tilt.is-tilting {
+  transition: transform .08s linear, box-shadow .24s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .premium-tilt:hover {
+    box-shadow: 0 28px 70px rgba(0, 0, 0, .18);
+  }
+}
+
+@keyframes premiumHeaderInDesktop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-18px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes premiumHeaderInMobile {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes premiumLogoBreath {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(87, 227, 75, 0)); }
+  50% { filter: drop-shadow(0 0 16px rgba(87, 227, 75, .18)); }
+}
+
+@keyframes premiumGlowDrift {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: .56; }
+  to { transform: translate3d(-78px, 42px, 0) scale(1.12); opacity: .84; }
+}
+
+@keyframes premiumFadeUp {
+  from { opacity: 0; transform: translateY(18px); filter: blur(9px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes premiumTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(.985);
+    letter-spacing: -.09em;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes premiumLineGrow {
+  from { transform: translateY(-3px) scaleX(.15); opacity: .5; }
+  to { transform: translateY(-3px) scaleX(1); opacity: 1; }
+}
+
+@keyframes premiumFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(0, -14px, 0) rotate(-1.2deg); }
+}
+
+@keyframes premiumSymbolGlow {
+  0%, 100% { filter: drop-shadow(0 32px 22px rgba(75, 217, 65, .16)); }
+  50% { filter: drop-shadow(0 44px 34px rgba(75, 217, 65, .28)); }
+}
+
+@keyframes premiumCardIn {
+  from { opacity: 0; transform: translateY(22px) scale(.96); filter: blur(10px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes premiumGlowPulse {
+  from { opacity: .58; transform: translate3d(-8px, 8px, 0) scale(.98); }
+  to { opacity: .9; transform: translate3d(10px, -10px, 0) scale(1.06); }
+}
+
+@keyframes premiumSweep {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(130%); }
+}
+
+@keyframes premiumStageIn {
+  from { opacity: 0; transform: translateY(24px) scale(.985); filter: blur(12px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes premiumScreenSheen {
+  0% { opacity: 0; transform: translateX(-130%); }
+  16% { opacity: .82; }
+  100% { opacity: 0; transform: translateX(130%); }
+}
+
+@keyframes premiumWhatsappIn {
+  from { opacity: 0; transform: translateY(20px) scale(.94); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes premiumOnlinePulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .55), 0 0 0 3px rgba(53, 208, 47, .2); }
+  70%, 100% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0), 0 0 0 3px rgba(53, 208, 47, .08); }
+}
+
+@media (max-width: 980px) {
+  body.site-loaded .header {
+    animation-name: premiumHeaderInMobile;
+  }
+}
+
+@media (max-width: 768px) {
+  .premium-cursor-glow {
+    display: none;
+  }
+
+  .hero::after {
+    right: -180px;
+    top: 5%;
+    opacity: .52;
+  }
+
+  .hero-symbol {
+    animation-duration: 8.5s;
+  }
+
+  .service:hover .service-icon,
+  .about-v2-code-list div:hover {
+    transform: none;
+  }
+
+  .premium-tilt,
+  .premium-tilt.is-tilting {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .001ms !important;
+  }
+
+  .premium-cursor-glow,
+  .scroll-progress {
+    display: none !important;
+  }
+}
+
