@@ -57,7 +57,7 @@ const defaultPortfolioApiConfig = {
   publicPath: "/api/v1/portfolio-items",
   status: "published",
   featuredOnly: false,
-  limit: 50,
+  limit: 5,
   timeout: 15000
 };
 
@@ -87,7 +87,6 @@ function buildPortfolioApiUrl() {
   const baseUrl = normalizeBaseUrl(portfolioApiConfig.baseUrl);
   const path = portfolioApiConfig.publicPath || "/api/v1/portfolio-items";
   const url = new URL(`${baseUrl}${path}`);
-  url.searchParams.set("limit", 5);
 
   if (portfolioApiConfig.status) {
     url.searchParams.set("status", portfolioApiConfig.status);
