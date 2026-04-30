@@ -13,6 +13,6 @@ window.CODEXA_PORTFOLIO_API = {
   publicPath: "/api/v1/portfolio-items",
   status: "published",
   featuredOnly: false,
-  limit: 50,
+  limit: 5,
   timeout: 15000
 };
