@@ -9,7 +9,7 @@
   - Use http://localhost:3333 se estiver rodando a API localmente.
 */
 window.CODEXA_PORTFOLIO_API = {
-  baseUrl: "http://localhost:3000",
+  baseUrl: "https://codexa-portifolio-api.vercel.app",
   publicPath: "/api/v1/portfolio-items",
   status: "published",
   featuredOnly: false,
