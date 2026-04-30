@@ -87,6 +87,7 @@ function buildPortfolioApiUrl() {
   const baseUrl = normalizeBaseUrl(portfolioApiConfig.baseUrl);
   const path = portfolioApiConfig.publicPath || "/api/v1/portfolio-items";
   const url = new URL(`${baseUrl}${path}`);
+  url.searchParams.set("limit", 5);
 
   if (portfolioApiConfig.status) {
     url.searchParams.set("status", portfolioApiConfig.status);
