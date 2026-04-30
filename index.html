@@ -164,105 +164,21 @@
       <div class="portfolio-sticky">
         <div class="container portfolio-cases-inner">
           <div class="portfolio-side portfolio-count reveal">
-            <strong id="portfolioCurrent">01</strong>
-            <span>/<em id="portfolioTotal">05</em></span>
+            <strong id="portfolioCurrent">00</strong>
+            <span>/<em id="portfolioTotal">00</em></span>
             <small>Projetos</small>
           </div>
 
-          <div class="portfolio-stage reveal" aria-label="Projetos em destaque">
-            <!-- <div class="portfolio-big-label">PORTFÓLIO</div> -->
-
-            <article class="project-window project-window-1">
-              <div class="window-bar">
-                <div class="window-dots"><span></span><span></span><span></span></div>
-                <p>Praticità</p>
-                <a href="https://praticita-chat-gtp.vercel.app/" target="_blank">Abrir ↗</a>
-              </div>
-              <div class="project-screen">
-                <picture>
-                  <source media="(max-width: 768px)" srcset="assets/sites_portifolio_mobile/praticita-mobile.png" />
-                  <img src="assets/sites_portifolio/praticita.png" alt="Projeto Praticità" />
-                </picture>
-              </div>
-              <div class="mobile-project-info">
-                <span class="mobile-project-number">01</span>
-                <div class="mobile-project-copy">
-                  <strong>Praticità</strong>
-                  <p>Landing page gastronômica com foco em reservas e experiência visual envolvente.</p>
-                </div>
-                <a href="https://praticita-chat-gtp.vercel.app/" target="_blank" rel="noopener">Ver projeto <span>↗</span></a>
-              </div>
-            </article>
-
-            <article class="project-window project-window-3">
-              <div class="window-bar">
-                <div class="window-dots"><span></span><span></span><span></span></div>
-                <p>Morais & Associados</p>
-                <a href="https://morais-e-associados.vercel.app/" target="_blank">Abrir ↗</a>
-              </div>
-              <div class="project-screen">
-                <picture>
-                  <source media="(max-width: 768px)" srcset="assets/sites_portifolio_mobile/moraes-associados-mobile.png" />
-                  <img src="assets/sites_portifolio/moraes-associados.png" alt="Projeto Moraes & Associados" />
-                </picture>
-              </div>
-              <div class="mobile-project-info">
-                <span class="mobile-project-number">02</span>
-                <div class="mobile-project-copy">
-                  <strong>Morais &amp; Associados</strong>
-                  <p>Site jurídico com presença forte, linguagem premium e foco em autoridade.</p>
-                </div>
-                <a href="https://morais-e-associados.vercel.app/" target="_blank" rel="noopener">Ver projeto <span>↗</span></a>
-              </div>
-            </article>
-
-            <article class="project-window project-window-4">
-              <div class="window-bar">
-                <div class="window-dots"><span></span><span></span><span></span></div>
-                <p>Essenza Joias</p>
-                <a href="https://essenza-joias.vercel.app/" target="_blank">Abrir ↗</a>
-              </div>
-              <div class="project-screen">
-                <picture>
-                  <source media="(max-width: 768px)" srcset="assets/sites_portifolio_mobile/essenza-joias-mobile.png" />
-                  <img src="assets/sites_portifolio/essenza-joias.png" alt="Projeto Essenza Joias" />
-                </picture>
-              </div>
-              <div class="mobile-project-info">
-                <span class="mobile-project-number">03</span>
-                <div class="mobile-project-copy">
-                  <strong>Essenza Joias</strong>
-                  <p>E-commerce elegante para destacar produtos premium com um toque sofisticado.</p>
-                </div>
-                <a href="https://essenza-joias.vercel.app/" target="_blank" rel="noopener">Ver projeto <span>↗</span></a>
-              </div>
-            </article>
-
-            <article class="project-window project-window-5">
-              <div class="window-bar">
-                <div class="window-dots"><span></span><span></span><span></span></div>
-                <p>Odonto Prime</p>
-                <a href="https://odonto-prime-liart.vercel.app/" target="_blank">Abrir ↗</a>
-              </div>
-              <div class="project-screen">
-                <picture>
-                  <source media="(max-width: 768px)" srcset="assets/sites_portifolio_mobile/odonto-prime-mobile.png" />
-                  <img src="assets/sites_portifolio/odonto-prime.png" alt="Projeto Odonto Prime" />
-                </picture>
-              </div>
-              <div class="mobile-project-info">
-                <span class="mobile-project-number">04</span>
-                <div class="mobile-project-copy">
-                  <strong>Odonto Prime</strong>
-                  <p>Landing page moderna e leve, pensada para gerar confiança e agendamentos.</p>
-                </div>
-                <a href="https://odonto-prime-liart.vercel.app/" target="_blank" rel="noopener">Ver projeto <span>↗</span></a>
-              </div>
-            </article>
+          <div class="portfolio-stage reveal" id="portfolioProjects" aria-label="Projetos em destaque" aria-live="polite">
+            <div class="portfolio-state portfolio-loading" role="status">
+              <span class="portfolio-state-orb"></span>
+              <strong>Carregando portfólio</strong>
+              <p>Buscando os projetos publicados na API da Codexa...</p>
+            </div>
           </div>
 
           <div class="portfolio-side portfolio-total reveal">
-            <strong>4 cases</strong>
+            <strong id="portfolioCaseLabel">0 cases</strong>
           </div>
         </div>
       </div>
@@ -381,6 +297,7 @@
     <span class="whatsapp-float__arrow" aria-hidden="true">↗</span>
   </a>
 
+  <script src="portfolio-api.config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

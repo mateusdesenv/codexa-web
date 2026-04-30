@@ -44,14 +44,222 @@ const observer = new IntersectionObserver((entries) => {
 
 reveals.forEach((item) => observer.observe(item));
 
-/* Portfolio stack acompanhado pelo scroll — estilo do exemplo enviado */
+/* Portfolio dinâmico via API — usa GET /api/v1/portfolio-items */
 const portfolioSection = document.querySelector(".portfolio-cases");
-const projectWindows = Array.from(document.querySelectorAll(".project-window"));
+const portfolioStage = document.getElementById("portfolioProjects") || document.querySelector(".portfolio-stage");
+let projectWindows = [];
 const portfolioCurrent = document.getElementById("portfolioCurrent");
 const portfolioTotal = document.getElementById("portfolioTotal");
+const portfolioCaseLabel = document.getElementById("portfolioCaseLabel");
+
+const defaultPortfolioApiConfig = {
+  baseUrl: "https://SEU-PROJETO.vercel.app",
+  publicPath: "/api/v1/portfolio-items",
+  status: "published",
+  featuredOnly: false,
+  limit: 50,
+  timeout: 15000
+};
+
+const portfolioApiConfig = {
+  ...defaultPortfolioApiConfig,
+  ...(window.CODEXA_PORTFOLIO_API || {})
+};
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function normalizeBaseUrl(url = "") {
+  return String(url).replace(/\/+$/, "");
+}
+
+function buildPortfolioApiUrl() {
+  const baseUrl = normalizeBaseUrl(portfolioApiConfig.baseUrl);
+  const path = portfolioApiConfig.publicPath || "/api/v1/portfolio-items";
+  const url = new URL(`${baseUrl}${path}`);
+
+  if (portfolioApiConfig.status) {
+    url.searchParams.set("status", portfolioApiConfig.status);
+  }
+
+  if (portfolioApiConfig.featuredOnly) {
+    url.searchParams.set("featured", "true");
+  }
+
+  if (portfolioApiConfig.limit) {
+    url.searchParams.set("limit", String(portfolioApiConfig.limit));
+  }
+
+  return url.toString();
+}
+
+function withTimeout(promise, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  return {
+    signal: controller.signal,
+    run: promise(controller.signal).finally(() => window.clearTimeout(timeout))
+  };
+}
+
+function renderPortfolioState(type, title, description) {
+  if (!portfolioStage) return;
+
+  portfolioStage.innerHTML = `
+    <div class="portfolio-state portfolio-state--${escapeHtml(type)}">
+      <span class="portfolio-state-orb"></span>
+      <strong>${escapeHtml(title)}</strong>
+      <p>${escapeHtml(description)}</p>
+    </div>
+  `;
+
+  projectWindows = [];
+  updatePortfolioCounters(0, 0);
+}
+
+function updatePortfolioCounters(currentIndex = 0, total = projectWindows.length) {
+  if (portfolioCurrent) {
+    portfolioCurrent.textContent = total ? String(currentIndex + 1).padStart(2, "0") : "00";
+  }
+
+  if (portfolioTotal) {
+    portfolioTotal.textContent = String(total).padStart(2, "0");
+  }
+
+  if (portfolioCaseLabel) {
+    portfolioCaseLabel.textContent = `${total} ${total === 1 ? "case" : "cases"}`;
+  }
+}
+
+function syncPortfolioHeight() {
+  if (!portfolioSection) return;
+
+  const total = Math.max(projectWindows.length, 1);
+  const isMobilePortfolio = window.innerWidth <= 768;
+  const height = isMobilePortfolio
+    ? Math.max(350, 150 + total * 50)
+    : Math.max(170, 95 + total * 18);
+
+  portfolioSection.style.height = `${height}vh`;
+}
+
+function createPortfolioCard(item, index) {
+  const number = String(index + 1).padStart(2, "0");
+  const title = item.title || "Projeto Codexa";
+  const description = item.shortDescription || "Projeto desenvolvido pela Codexa.";
+  const projectUrl = item.projectUrl || "#";
+  const desktopImage = item.desktopImageUrl || item.mobileImageUrl || "assets/prototipo-site-codexa.png";
+  const mobileImage = item.mobileImageUrl || item.desktopImageUrl || desktopImage;
+  const altText = item.altText || `Projeto ${title}`;
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(description);
+  const safeProjectUrl = escapeHtml(projectUrl);
+  const safeDesktopImage = escapeHtml(desktopImage);
+  const safeMobileImage = escapeHtml(mobileImage);
+  const safeAltText = escapeHtml(altText);
+
+  const article = document.createElement("article");
+  article.className = `project-window project-window-${index + 1}`;
+  article.dataset.projectId = item.id || item.slug || String(index + 1);
+
+  article.innerHTML = `
+    <div class="window-bar">
+      <div class="window-dots"><span></span><span></span><span></span></div>
+      <p>${safeTitle}</p>
+      <a href="${safeProjectUrl}" target="_blank" rel="noopener">Abrir ↗</a>
+    </div>
+    <div class="project-screen">
+      <picture>
+        <source media="(max-width: 768px)" srcset="${safeMobileImage}" />
+        <img src="${safeDesktopImage}" alt="${safeAltText}" loading="lazy" />
+      </picture>
+    </div>
+    <div class="mobile-project-info">
+      <span class="mobile-project-number">${number}</span>
+      <div class="mobile-project-copy">
+        <strong>${safeTitle}</strong>
+        <p>${safeDescription}</p>
+      </div>
+      <a href="${safeProjectUrl}" target="_blank" rel="noopener">Ver projeto <span>↗</span></a>
+    </div>
+  `;
+
+  return article;
+}
+
+function renderPortfolioItems(items = []) {
+  if (!portfolioStage) return;
+
+  const sortedItems = [...items]
+    .filter((item) => item && item.status === "published")
+    .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+
+  if (!sortedItems.length) {
+    renderPortfolioState(
+      "empty",
+      "Nenhum projeto publicado",
+      "Cadastre e publique projetos no painel administrativo para que eles apareçam aqui."
+    );
+    syncPortfolioHeight();
+    return;
+  }
+
+  portfolioStage.innerHTML = "";
+  sortedItems.forEach((item, index) => portfolioStage.appendChild(createPortfolioCard(item, index)));
+  projectWindows = Array.from(portfolioStage.querySelectorAll(".project-window"));
+  updatePortfolioCounters(0, projectWindows.length);
+  syncPortfolioHeight();
+  updatePortfolioStack();
+}
+
+async function loadPortfolioFromApi() {
+  if (!portfolioStage) return;
+
+  if (!portfolioApiConfig.baseUrl || portfolioApiConfig.baseUrl.includes("SEU-PROJETO")) {
+    renderPortfolioState(
+      "config",
+      "Configure a URL da API",
+      "Edite o arquivo portfolio-api.config.js e informe a URL do deploy da API de portfólio."
+    );
+    syncPortfolioHeight();
+    return;
+  }
+
+  renderPortfolioState("loading", "Carregando portfólio", "Buscando os projetos publicados na API da Codexa...");
+
+  try {
+    const request = withTimeout((signal) => fetch(buildPortfolioApiUrl(), { signal }), portfolioApiConfig.timeout);
+    const response = await request.run;
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const message = result?.error?.message || `A API retornou status ${response.status}.`;
+      throw new Error(message);
+    }
+
+    renderPortfolioItems(Array.isArray(result?.data) ? result.data : []);
+  } catch (error) {
+    const isAbort = error?.name === "AbortError";
+    renderPortfolioState(
+      "error",
+      "Não foi possível carregar o portfólio",
+      isAbort
+        ? "A API demorou para responder. Verifique o deploy e tente novamente."
+        : error?.message || "Verifique a URL da API, o CORS e se o MongoDB está conectado."
+    );
+    syncPortfolioHeight();
+  }
 }
 
 function updatePortfolioStack() {
@@ -66,13 +274,7 @@ function updatePortfolioStack() {
   const activeFloat = progress * (projectWindows.length - 1);
   const activeIndex = Math.round(activeFloat);
 
-  if (portfolioCurrent) {
-    portfolioCurrent.textContent = String(activeIndex + 1).padStart(2, "0");
-  }
-
-  if (portfolioTotal) {
-    portfolioTotal.textContent = String(projectWindows.length).padStart(2, "0");
-  }
+  updatePortfolioCounters(activeIndex, projectWindows.length);
 
   projectWindows.forEach((card, index) => {
     const distance = index - activeFloat;
@@ -120,6 +322,7 @@ function requestPortfolioUpdate() {
   portfolioTicking = true;
 
   requestAnimationFrame(() => {
+    syncPortfolioHeight();
     updatePortfolioStack();
     portfolioTicking = false;
   });
@@ -127,7 +330,7 @@ function requestPortfolioUpdate() {
 
 window.addEventListener("scroll", requestPortfolioUpdate, { passive: true });
 window.addEventListener("resize", requestPortfolioUpdate);
-updatePortfolioStack();
+loadPortfolioFromApi();
 
 /* Animações premium v2 — microinterações seguras */
 document.documentElement.classList.add("js");

@@ -989,6 +989,71 @@ a {
   transform-style: preserve-3d;
 }
 
+.portfolio-state {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  width: min(520px, 92vw);
+  min-height: 220px;
+  padding: 34px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(97, 240, 82, .16), transparent 35%),
+    linear-gradient(180deg, rgba(13, 22, 34, .92), rgba(7, 13, 22, .94));
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .42);
+  color: #f6f8fb;
+}
+
+.portfolio-state-orb {
+  width: 56px;
+  height: 56px;
+  border-radius: 22px;
+  margin-bottom: 16px;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .42), transparent 28%),
+    linear-gradient(135deg, rgba(97, 240, 82, .9), rgba(35, 82, 255, .72));
+  box-shadow: 0 18px 42px rgba(97, 240, 82, .16);
+}
+
+.portfolio-loading .portfolio-state-orb,
+.portfolio-state--loading .portfolio-state-orb {
+  animation: portfolioStatePulse 1.2s ease-in-out infinite alternate;
+}
+
+.portfolio-state strong {
+  display: block;
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+
+.portfolio-state p {
+  max-width: 390px;
+  margin-top: 10px;
+  color: rgba(232, 238, 245, .68);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+@keyframes portfolioStatePulse {
+  from {
+    transform: translateY(0) scale(.96);
+    filter: saturate(.9);
+  }
+
+  to {
+    transform: translateY(-5px) scale(1.04);
+    filter: saturate(1.2);
+  }
+}
+
+
 .portfolio-big-label {
   position: absolute;
   left: 50%;
