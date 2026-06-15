@@ -245,10 +245,12 @@ a {
 }
 
 .hero-symbol img {
-  width: 420px;
-  max-width: 90%;
+  width: min(100%, 680px);
+  max-width: 100%;
   display: block;
-  filter: drop-shadow(0 32px 22px rgba(0, 196, 69, .16));
+  border-radius: 20px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, .28), 0 18px 38px rgba(0, 196, 69, .10);
+  filter: drop-shadow(0 20px 22px rgba(0, 196, 69, .08));
 }
 
 .brands {
@@ -754,7 +756,7 @@ a {
   }
 
   .hero-symbol img {
-    width: 230px;
+    width: min(100%, 520px);
   }
 
   .label {
@@ -1510,7 +1512,8 @@ a {
   }
 
   .hero-symbol img {
-    width: 210px;
+    width: 100%;
+    max-width: 460px;
   }
 
   .hero-actions {
