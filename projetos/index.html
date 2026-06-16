@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projetos Codexa — Sites, landing pages e sistemas</title>
+  <meta name="description" content="Conheça projetos desenvolvidos pela Codexa para empresas que querem mais credibilidade, leads e vendas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="shortcut icon" href="../assets/codexa-app-icon-favicon.png" type="image/x-icon">
+</head>
+<body class="projects-page">
+  <header class="header">
+    <a href="../" class="brand-logo" aria-label="Codexa">
+      <img class="img-logo" src="../assets/codexa-primary-logo.png" alt="Codexa" />
+    </a>
+
+    <button class="menu-button" aria-label="Abrir menu">
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav">
+      <a href="../#servicos">Serviços</a>
+      <a href="../#sobre">Sobre</a>
+      <a href="../#portfolio">Portfólio</a>
+      <a href="./" class="active" aria-current="page">Projetos</a>
+      <a href="../#contato">Contato <i></i></a>
+    </nav>
+
+    <a class="top-cta" href="https://wa.me/5548988512030" target="_blank" rel="noopener">
+      <span class="wa-icon">◉</span>
+      Fale conosco
+    </a>
+  </header>
+
+  <main>
+    <section class="projects-hero">
+      <div class="container projects-hero__grid">
+        <div class="projects-hero__copy reveal">
+          <p class="label green-label"><span></span> Portfólio Codexa</p>
+          <h1>Projetos que geram resultados reais.</h1>
+          <p>Sites, landing pages e sistemas desenvolvidos para empresas que querem mais credibilidade, mais leads e mais vendas.</p>
+
+          <div class="projects-hero__actions">
+            <a href="#lista-projetos" class="btn-primary">Ver projetos <span>→</span></a>
+            <a href="https://wa.me/5548988512030" target="_blank" rel="noopener" class="projects-hero__link">Solicitar orçamento <span>→</span></a>
+          </div>
+        </div>
+
+        <div class="projects-hero__panel reveal" aria-hidden="true">
+          <div class="projects-hero__metric">
+            <span>01</span>
+            <strong>Processo claro</strong>
+            <small>Briefing, estrutura, design e publicação.</small>
+          </div>
+          <div class="projects-hero__metric">
+            <span>02</span>
+            <strong>Visual profissional</strong>
+            <small>Interfaces limpas, responsivas e comerciais.</small>
+          </div>
+          <div class="projects-hero__metric">
+            <span>03</span>
+            <strong>Foco em conversão</strong>
+            <small>Projetos feitos para gerar contatos reais.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects-list-section" id="lista-projetos">
+      <div class="container">
+        <div class="projects-section-heading reveal">
+          <div>
+            <p class="label green-label"><span></span> Projetos publicados</p>
+            <h2>Cases com estrutura, design e objetivo comercial.</h2>
+          </div>
+
+          <div class="projects-filter" aria-label="Filtrar por categoria">
+            <button class="active" type="button" data-project-filter="Todos">Todos</button>
+            <button type="button" data-project-filter="Sites Institucionais">Sites Institucionais</button>
+            <button type="button" data-project-filter="Landing Pages">Landing Pages</button>
+            <button type="button" data-project-filter="Sistemas">Sistemas</button>
+            <button type="button" data-project-filter="E-commerce">E-commerce</button>
+          </div>
+        </div>
+
+        <div class="projects-state projects-state--loading" id="projectsState" role="status">
+          <span></span>
+          <strong>Carregando projetos</strong>
+          <p>Buscando os projetos publicados na API da Codexa...</p>
+        </div>
+
+        <div class="projects-grid" id="projectsGrid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="projects-final-cta">
+      <div class="container projects-final-cta__inner reveal">
+        <div>
+          <p class="label"><span></span> Próximo projeto</p>
+          <h2>Quer transformar sua presença digital em uma máquina de confiança e contatos?</h2>
+          <p>Converse com a Codexa e veja qual estrutura faz mais sentido para o seu negócio.</p>
+        </div>
+        <a href="https://wa.me/5548988512030" target="_blank" rel="noopener">Solicitar orçamento <span>→</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer footer-premium">
+    <div class="footer-premium__glow footer-premium__glow--left" aria-hidden="true"></div>
+    <div class="footer-premium__glow footer-premium__glow--right" aria-hidden="true"></div>
+
+    <div class="container footer-premium__inner">
+      <div class="footer-premium__main">
+        <div class="footer-premium__brand">
+          <a href="../" class="footer-premium__logo" aria-label="Voltar para o início">
+            <img src="../assets/codexa-primary-logo-reversed.png" alt="Codexa" />
+          </a>
+
+          <p>Sites e experiências digitais para marcas que querem <strong>crescer com presença online.</strong></p>
+
+          <div class="footer-premium__socials" aria-label="Redes sociais da Codexa">
+            <a href="https://www.instagram.com/co.dexaweb" target="_blank" rel="noopener" aria-label="Instagram da Codexa">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="4" width="16" height="16" rx="5"></rect>
+                <circle cx="12" cy="12" r="3.4"></circle>
+                <path d="M17.3 6.8h.01"></path>
+              </svg>
+            </a>
+            <a href="https://wa.me/5548988512030" target="_blank" rel="noopener" aria-label="WhatsApp da Codexa">
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M16.04 4C9.42 4 4.05 9.28 4.05 15.79c0 2.18.62 4.22 1.69 5.97L4 28l6.42-1.67a12.15 12.15 0 0 0 5.62 1.38C22.66 27.71 28 22.43 28 15.92 28 9.31 22.66 4 16.04 4Z"></path>
+                <path d="M21.49 18.35c-.3-.15-1.76-.86-2.03-.95-.27-.1-.47-.15-.67.15-.2.29-.77.95-.95 1.14-.17.2-.35.22-.65.08-.3-.15-1.26-.46-2.4-1.46-.89-.78-1.49-1.74-1.66-2.04-.17-.29-.02-.45.13-.6.13-.13.3-.34.45-.51.15-.17.2-.29.3-.49.1-.2.05-.37-.03-.52-.07-.15-.67-1.58-.92-2.17-.24-.57-.49-.49-.67-.5h-.57c-.2 0-.52.08-.79.37-.27.29-1.04 1-1.04 2.44 0 1.44 1.07 2.83 1.21 3.02.15.2 2.1 3.15 5.08 4.41.71.3 1.26.48 1.69.61.71.22 1.36.19 1.87.12.57-.08 1.76-.7 2.01-1.39.25-.68.25-1.27.17-1.39-.07-.13-.27-.2-.57-.34Z"></path>
+              </svg>
+            </a>
+            <a href="mailto:contato@codexaweb.com.br" aria-label="Enviar e-mail para a Codexa">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16v12H4z"></path>
+                <path d="m4 7 8 6 8-6"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <nav class="footer-premium__links" aria-label="Links do rodapé">
+          <div class="footer-premium__group">
+            <h4><span></span>Navegação</h4>
+            <a href="../#inicio">Início</a>
+            <a href="../#servicos">Serviços</a>
+            <a href="./">Projetos</a>
+            <a href="../#sobre">Sobre</a>
+            <a href="../#contato">Contato</a>
+          </div>
+
+          <div class="footer-premium__group">
+            <h4><span></span>Serviços</h4>
+            <a href="../#servicos">Design Estratégico</a>
+            <a href="../#servicos">Landing Pages</a>
+            <a href="../#servicos">Sites Institucionais</a>
+            <a href="../#servicos">Conversão</a>
+          </div>
+
+          <div class="footer-premium__group footer-premium__group--contact">
+            <h4><span></span>Contato</h4>
+            <a href="https://wa.me/5548988512030" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 4A7.86 7.86 0 0 0 4.1 11.78c0 1.45.41 2.82 1.13 3.98L4 20l4.38-1.13a8.1 8.1 0 0 0 3.66.87 7.86 7.86 0 0 0 7.94-7.78A7.88 7.88 0 0 0 12.04 4Z"></path><path d="M15.6 13.7c-.2-.1-1.18-.58-1.36-.64-.18-.07-.32-.1-.45.1-.14.2-.52.64-.64.77-.12.14-.24.15-.44.05-.2-.1-.85-.31-1.62-.98-.6-.52-1-1.18-1.12-1.38-.12-.2-.01-.31.09-.41.09-.09.2-.23.3-.35.1-.12.14-.2.2-.33.07-.14.03-.25-.02-.35-.05-.1-.45-1.07-.62-1.46-.16-.39-.33-.33-.45-.34h-.39c-.13 0-.35.05-.53.25-.18.2-.7.68-.7 1.65s.72 1.91.82 2.04c.1.14 1.42 2.13 3.44 2.98.48.2.85.32 1.14.41.48.15.92.13 1.27.08.39-.05 1.18-.48 1.35-.94.17-.46.17-.86.12-.94-.05-.09-.18-.14-.39-.24Z"></path></svg>
+              WhatsApp
+            </a>
+            <a href="https://www.instagram.com/co.dexaweb" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.4"></circle><path d="M17.3 6.8h.01"></path></svg>
+              Instagram
+            </a>
+            <a href="mailto:contato@codexaweb.com.br">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+              contato@codexaweb.com.br
+            </a>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-premium__bottom">
+        <p>© 2026 Codexa. Todos os direitos reservados.</p>
+        <div class="footer-premium__mark" aria-hidden="true">
+          <img src="../assets/codexa-icon-only.png" alt="" />
+        </div>
+        <p><span></span>Criado para marcas que querem se destacar.</p>
+      </div>
+    </div>
+  </footer>
+
+  <a class="whatsapp-float whatsapp-float--v2" href="https://wa.me/5548988512030" target="_blank" rel="noopener" aria-label="Fale com a Codexa no WhatsApp">
+    <span class="whatsapp-float__badge" aria-hidden="true">online</span>
+    <span class="whatsapp-float__icon" aria-hidden="true">
+      <svg viewBox="0 0 32 32" focusable="false">
+        <path d="M16.04 4C9.42 4 4.05 9.28 4.05 15.79c0 2.18.62 4.22 1.69 5.97L4 28l6.42-1.67a12.15 12.15 0 0 0 5.62 1.38C22.66 27.71 28 22.43 28 15.92 28 9.31 22.66 4 16.04 4Zm0 21.6a9.98 9.98 0 0 1-5.08-1.39l-.36-.21-3.8.99 1.02-3.63-.24-.38a9.44 9.44 0 0 1-1.45-5.19c0-5.34 4.45-9.68 9.92-9.68 5.46 0 9.91 4.37 9.91 9.81 0 5.34-4.45 9.68-9.92 9.68Zm5.45-7.25c-.3-.15-1.76-.86-2.03-.95-.27-.1-.47-.15-.67.15-.2.29-.77.95-.95 1.14-.17.2-.35.22-.65.08-.3-.15-1.26-.46-2.4-1.46-.89-.78-1.49-1.74-1.66-2.04-.17-.29-.02-.45.13-.6.13-.13.3-.34.45-.51.15-.17.2-.29.3-.49.1-.2.05-.37-.03-.52-.07-.15-.67-1.58-.92-2.17-.24-.57-.49-.49-.67-.5h-.57c-.2 0-.52.08-.79.37-.27.29-1.04 1-1.04 2.44 0 1.44 1.07 2.83 1.21 3.02.15.2 2.1 3.15 5.08 4.41.71.3 1.26.48 1.69.61.71.22 1.36.19 1.87.12.57-.08 1.76-.7 2.01-1.39.25-.68.25-1.27.17-1.39-.07-.13-.27-.2-.57-.34Z"></path>
+      </svg>
+    </span>
+    <span class="whatsapp-float__content">
+      <strong>Fale conosco</strong>
+      <small>Chame no WhatsApp</small>
+    </span>
+    <span class="whatsapp-float__arrow" aria-hidden="true">↗</span>
+  </a>
+
+  <script src="../portfolio-api.config.js"></script>
+  <script src="../script.js"></script>
+  <script src="../projects-page.js"></script>
+</body>
+</html>
