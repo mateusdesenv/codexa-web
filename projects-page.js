@@ -26,13 +26,25 @@ const URL_FILTER_CANONICAL_KEYS = {
   category: "categoria",
   niche: "nicho"
 };
+const FILTER_LABELS = {
+  category: {
+    singular: "categoria selecionada",
+    plural: "categorias selecionadas",
+    placeholder: "Todas as categorias"
+  },
+  niche: {
+    singular: "nicho selecionado",
+    plural: "nichos selecionados",
+    placeholder: "Todos os nichos"
+  }
+};
 
 let allProjects = [];
 let allCategories = [];
 let allNiches = [];
 let activeFilters = {
-  category: ALL_FILTER_VALUE,
-  niche: ALL_FILTER_VALUE
+  category: [],
+  niche: []
 };
 
 function normalizeProjectBaseUrl(url = "") {
@@ -58,39 +70,66 @@ function normalizeFilterValue(value = "") {
     .replace(/^-+|-+$/g, "");
 }
 
+function normalizeSelectedValues(values = []) {
+  const list = Array.isArray(values) ? values : [values];
+  const map = new Map();
+
+  list
+    .flatMap((value) => String(value || "").split(","))
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .forEach((value) => {
+      const key = normalizeFilterValue(value);
+      if (key && !map.has(key)) map.set(key, value);
+    });
+
+  return Array.from(map.values());
+}
+
 function valuesMatch(currentValue, selectedValue) {
   if (!selectedValue) return true;
   return normalizeFilterValue(currentValue) === normalizeFilterValue(selectedValue);
 }
 
-function getUrlFilterValue(filterName) {
-  if (!window.location?.search) return ALL_FILTER_VALUE;
+function matchesAnySelectedValue(currentValue, selectedValues = []) {
+  const normalizedSelectedValues = normalizeSelectedValues(selectedValues);
+  if (!normalizedSelectedValues.length) return true;
+  return normalizedSelectedValues.some((selectedValue) => valuesMatch(currentValue, selectedValue));
+}
+
+function getUrlFilterValues(filterName) {
+  if (!window.location?.search) return [];
 
   const params = new URLSearchParams(window.location.search);
   const keys = URL_FILTER_KEYS[filterName] || [];
+  const values = [];
 
-  for (const key of keys) {
-    const value = params.get(key);
-    if (value) return value.trim();
-  }
+  keys.forEach((key) => {
+    params.getAll(key).forEach((value) => {
+      values.push(...String(value || "").split(","));
+    });
+  });
 
-  return ALL_FILTER_VALUE;
+  return normalizeSelectedValues(values);
 }
 
-function resolveFilterValueFromOptions(rawValue, availableValues = []) {
-  const normalizedRawValue = normalizeFilterValue(rawValue);
-  if (!normalizedRawValue) return ALL_FILTER_VALUE;
+function resolveFilterValuesFromOptions(rawValues, availableValues = []) {
+  const normalizedAvailableValues = new Map(
+    availableValues.map((value) => [normalizeFilterValue(value), value])
+  );
 
-  return availableValues.find((value) => normalizeFilterValue(value) === normalizedRawValue) || ALL_FILTER_VALUE;
+  return normalizeSelectedValues(rawValues)
+    .map((rawValue) => normalizedAvailableValues.get(normalizeFilterValue(rawValue)))
+    .filter(Boolean);
 }
 
 function applyFiltersFromUrl() {
-  const categoryFromUrl = getUrlFilterValue("category");
-  const nicheFromUrl = getUrlFilterValue("niche");
+  const categoriesFromUrl = getUrlFilterValues("category");
+  const nichesFromUrl = getUrlFilterValues("niche");
 
   activeFilters = {
-    category: resolveFilterValueFromOptions(categoryFromUrl, allCategories),
-    niche: resolveFilterValueFromOptions(nicheFromUrl, allNiches)
+    category: resolveFilterValuesFromOptions(categoriesFromUrl, allCategories),
+    niche: resolveFilterValuesFromOptions(nichesFromUrl, allNiches)
   };
 
   updateFilterControlsState();
@@ -105,12 +144,12 @@ function syncFiltersToUrl() {
     url.searchParams.delete(key);
   });
 
-  if (activeFilters.category) {
-    url.searchParams.set(URL_FILTER_CANONICAL_KEYS.category, activeFilters.category);
+  if (activeFilters.category.length) {
+    url.searchParams.set(URL_FILTER_CANONICAL_KEYS.category, activeFilters.category.join(","));
   }
 
-  if (activeFilters.niche) {
-    url.searchParams.set(URL_FILTER_CANONICAL_KEYS.niche, activeFilters.niche);
+  if (activeFilters.niche.length) {
+    url.searchParams.set(URL_FILTER_CANONICAL_KEYS.niche, activeFilters.niche.join(","));
   }
 
   window.history.replaceState(null, "", url.toString());
@@ -264,41 +303,110 @@ function extractTaxonomyNames(items, fallbackNames) {
   return names.length ? names : fallbackNames;
 }
 
-function renderSelectOptions(select, placeholder, values) {
-  if (!select) return;
+function getMultiselectButton(multiselect) {
+  return multiselect?.querySelector(".projects-multiselect__button");
+}
 
-  select.innerHTML = [
-    `<option value="${ALL_FILTER_VALUE}">${escapeProjectHtml(placeholder)}</option>`,
-    ...values.map((value) => `<option value="${escapeProjectHtml(value)}">${escapeProjectHtml(value)}</option>`)
-  ].join("");
+function getMultiselectDropdown(multiselect) {
+  return multiselect?.querySelector(".projects-multiselect__dropdown");
+}
 
-  select.disabled = values.length === 0;
+function getMultiselectOptions(multiselect) {
+  return multiselect?.querySelector(".projects-multiselect__options");
+}
+
+function renderMultiSelectOptions(multiselect, filterName, values) {
+  if (!multiselect) return;
+
+  const optionsWrapper = getMultiselectOptions(multiselect);
+  if (!optionsWrapper) return;
+
+  optionsWrapper.innerHTML = values.length
+    ? values.map((value) => {
+        const safeValue = escapeProjectHtml(value);
+        const inputId = `project-${filterName}-${normalizeFilterValue(value)}`;
+
+        return `
+          <label class="projects-multiselect__option" for="${escapeProjectHtml(inputId)}">
+            <input id="${escapeProjectHtml(inputId)}" type="checkbox" value="${safeValue}" />
+            <span class="projects-multiselect__checkbox" aria-hidden="true"></span>
+            <span class="projects-multiselect__option-text">${safeValue}</span>
+          </label>
+        `;
+      }).join("")
+    : `<div class="projects-multiselect__empty">Nenhuma opção disponível</div>`;
+}
+
+function updateMultiSelectControl(multiselect, filterName, values) {
+  if (!multiselect) return;
+
+  const labelConfig = FILTER_LABELS[filterName];
+  const selectedValues = normalizeSelectedValues(activeFilters[filterName]);
+  const selectedValueKeys = new Set(selectedValues.map(normalizeFilterValue));
+  const button = getMultiselectButton(multiselect);
+  const dropdown = getMultiselectDropdown(multiselect);
+  const valueLabel = multiselect.querySelector(".projects-multiselect__value");
+  const counter = multiselect.querySelector(".projects-multiselect__counter");
+  const checkboxes = multiselect.querySelectorAll('input[type="checkbox"]');
+  const isDisabled = values.length === 0;
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.checked = selectedValueKeys.has(normalizeFilterValue(checkbox.value));
+  });
+
+  if (button) {
+    button.disabled = isDisabled;
+    button.setAttribute("aria-expanded", multiselect.classList.contains("is-open") ? "true" : "false");
+  }
+
+  if (dropdown && isDisabled) {
+    dropdown.hidden = true;
+    multiselect.classList.remove("is-open");
+  }
+
+  if (valueLabel) {
+    if (!selectedValues.length) {
+      valueLabel.textContent = labelConfig.placeholder;
+    } else if (selectedValues.length === 1) {
+      valueLabel.textContent = selectedValues[0];
+    } else {
+      valueLabel.textContent = `${selectedValues.length} ${labelConfig.plural}`;
+    }
+  }
+
+  if (counter) {
+    counter.textContent = selectedValues.length;
+    counter.hidden = selectedValues.length === 0;
+  }
+
+  multiselect.classList.toggle("is-active", selectedValues.length > 0);
+  multiselect.classList.toggle("is-disabled", isDisabled);
 }
 
 function renderFilters() {
   allCategories = extractTaxonomyNames(allCategories, getFallbackCategoriesFromProjects());
   allNiches = extractTaxonomyNames(allNiches, getFallbackNichesFromProjects());
 
-  renderSelectOptions(projectCategoryFilter, "Todas as categorias", allCategories);
-  renderSelectOptions(projectNicheFilter, "Todos os nichos", allNiches);
+  renderMultiSelectOptions(projectCategoryFilter, "category", allCategories);
+  renderMultiSelectOptions(projectNicheFilter, "niche", allNiches);
   updateFilterControlsState();
 }
 
 function updateFilterControlsState() {
-  if (projectCategoryFilter) projectCategoryFilter.value = activeFilters.category;
-  if (projectNicheFilter) projectNicheFilter.value = activeFilters.niche;
+  updateMultiSelectControl(projectCategoryFilter, "category", allCategories);
+  updateMultiSelectControl(projectNicheFilter, "niche", allNiches);
 
-  const hasActiveFilter = Boolean(activeFilters.category || activeFilters.niche);
+  const hasActiveFilter = Boolean(activeFilters.category.length || activeFilters.niche.length);
   if (projectClearFilters) projectClearFilters.disabled = !hasActiveFilter;
 }
 
 function getVisibleProjects() {
   return allProjects
     .filter((project) => project.status === "published")
-    .filter((project) => valuesMatch(project.category, activeFilters.category))
+    .filter((project) => matchesAnySelectedValue(project.category, activeFilters.category))
     .filter((project) => {
-      if (!activeFilters.niche) return true;
-      return project.niches.some((niche) => valuesMatch(niche, activeFilters.niche));
+      if (!activeFilters.niche.length) return true;
+      return project.niches.some((niche) => matchesAnySelectedValue(niche, activeFilters.niche));
     })
     .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
 }
@@ -375,7 +483,9 @@ function setActiveFilters(nextFilters = {}, options = {}) {
 
   activeFilters = {
     ...activeFilters,
-    ...nextFilters
+    ...Object.fromEntries(
+      Object.entries(nextFilters).map(([key, values]) => [key, normalizeSelectedValues(values)])
+    )
   };
 
   updateFilterControlsState();
@@ -384,7 +494,57 @@ function setActiveFilters(nextFilters = {}, options = {}) {
 }
 
 function resetFilters() {
-  setActiveFilters({ category: ALL_FILTER_VALUE, niche: ALL_FILTER_VALUE });
+  setActiveFilters({ category: [], niche: [] });
+}
+
+function closeMultiSelect(multiselect) {
+  if (!multiselect) return;
+
+  const dropdown = getMultiselectDropdown(multiselect);
+  const button = getMultiselectButton(multiselect);
+
+  multiselect.classList.remove("is-open");
+  if (dropdown) dropdown.hidden = true;
+  if (button) button.setAttribute("aria-expanded", "false");
+}
+
+function closeAllMultiSelects(exceptMultiselect = null) {
+  [projectCategoryFilter, projectNicheFilter].forEach((multiselect) => {
+    if (multiselect && multiselect !== exceptMultiselect) closeMultiSelect(multiselect);
+  });
+}
+
+function toggleMultiSelect(multiselect) {
+  if (!multiselect || multiselect.classList.contains("is-disabled")) return;
+
+  const isOpen = multiselect.classList.contains("is-open");
+  const dropdown = getMultiselectDropdown(multiselect);
+  const button = getMultiselectButton(multiselect);
+
+  closeAllMultiSelects(multiselect);
+  multiselect.classList.toggle("is-open", !isOpen);
+  if (dropdown) dropdown.hidden = isOpen;
+  if (button) button.setAttribute("aria-expanded", isOpen ? "false" : "true");
+}
+
+function getValuesFromMultiselect(multiselect) {
+  return Array.from(multiselect?.querySelectorAll('input[type="checkbox"]:checked') || [])
+    .map((checkbox) => checkbox.value);
+}
+
+function bindMultiSelect(multiselect, filterName) {
+  if (!multiselect) return;
+
+  const button = getMultiselectButton(multiselect);
+
+  if (button) {
+    button.addEventListener("click", () => toggleMultiSelect(multiselect));
+  }
+
+  multiselect.addEventListener("change", (event) => {
+    if (!event.target.matches('input[type="checkbox"]')) return;
+    setActiveFilters({ [filterName]: getValuesFromMultiselect(multiselect) });
+  });
 }
 
 async function loadProjectsPage() {
@@ -435,20 +595,23 @@ if (projectsFiltersForm) {
   projectsFiltersForm.addEventListener("submit", (event) => event.preventDefault());
 }
 
-if (projectCategoryFilter) {
-  projectCategoryFilter.addEventListener("change", (event) => {
-    setActiveFilters({ category: event.target.value });
-  });
-}
-
-if (projectNicheFilter) {
-  projectNicheFilter.addEventListener("change", (event) => {
-    setActiveFilters({ niche: event.target.value });
-  });
-}
+bindMultiSelect(projectCategoryFilter, "category");
+bindMultiSelect(projectNicheFilter, "niche");
 
 if (projectClearFilters) {
-  projectClearFilters.addEventListener("click", resetFilters);
+  projectClearFilters.addEventListener("click", () => {
+    closeAllMultiSelects();
+    resetFilters();
+  });
 }
+
+document.addEventListener("click", (event) => {
+  const isInsideFilter = event.target.closest(".projects-multiselect");
+  if (!isInsideFilter) closeAllMultiSelects();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeAllMultiSelects();
+});
 
 loadProjectsPage();
