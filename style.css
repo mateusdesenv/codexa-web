@@ -4855,3 +4855,285 @@ body.site-loaded .brand-logo img {
     padding-top: 158px;
   }
 }
+
+/* ==============================
+   Padronização das logos do cabeçalho
+   ============================== */
+:root {
+  --header-logo-width-desktop: 320px;
+  --header-logo-width-tablet: 260px;
+  --header-logo-width-mobile: 225px;
+}
+
+.header {
+  grid-template-columns: var(--header-logo-width-desktop) 1fr auto;
+}
+
+.header .brand-logo {
+  width: var(--header-logo-width-desktop);
+  min-width: var(--header-logo-width-desktop);
+  height: auto;
+}
+
+.header .brand-logo img,
+.header .brand-logo .img-logo,
+.projects-page .header .brand-logo img,
+.projects-page .header .brand-logo .img-logo {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 88px;
+  object-fit: contain;
+  object-position: left center;
+  transform: none !important;
+  filter: none;
+}
+
+@media (max-width: 980px) {
+  .header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .header .brand-logo {
+    width: var(--header-logo-width-tablet);
+    min-width: 0;
+  }
+
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo {
+    width: var(--header-logo-width-tablet);
+    max-height: 72px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header .brand-logo {
+    width: var(--header-logo-width-mobile);
+  }
+
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo {
+    width: var(--header-logo-width-mobile);
+    height: auto;
+    max-height: 62px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header .brand-logo {
+    width: 205px;
+  }
+
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo {
+    width: 205px;
+    max-height: 58px;
+  }
+}
+
+/* ==============================
+   Ajuste final: logo do cabeçalho maior
+   ============================== */
+:root {
+  --header-logo-width-desktop: 385px;
+  --header-logo-width-tablet: 310px;
+  --header-logo-width-mobile: 255px;
+  --header-logo-width-small: 230px;
+}
+
+.header {
+  grid-template-columns: var(--header-logo-width-desktop) 1fr auto;
+}
+
+.header .brand-logo,
+.projects-page .header .brand-logo {
+  width: var(--header-logo-width-desktop);
+  min-width: var(--header-logo-width-desktop);
+  overflow: visible;
+}
+
+.header .brand-logo img,
+.header .brand-logo .img-logo,
+.projects-page .header .brand-logo img,
+.projects-page .header .brand-logo .img-logo,
+.projects-page .img-logo {
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  max-height: 90px;
+  object-fit: contain;
+  object-position: left center;
+  transform: none !important;
+  filter: none;
+}
+
+@media (max-width: 1120px) {
+  .projects-page .header {
+    grid-template-columns: var(--header-logo-width-tablet) 1fr auto;
+  }
+}
+
+@media (max-width: 980px) {
+  .header,
+  .projects-page .header {
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+  }
+
+  .header .brand-logo,
+  .projects-page .header .brand-logo {
+    width: var(--header-logo-width-tablet);
+    min-width: 0;
+  }
+
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    width: var(--header-logo-width-tablet) !important;
+    max-height: 72px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header,
+  .projects-page .header {
+    gap: 12px;
+    padding: 12px 12px;
+  }
+
+  .header .brand-logo,
+  .projects-page .header .brand-logo {
+    width: var(--header-logo-width-mobile);
+  }
+
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    width: var(--header-logo-width-mobile) !important;
+    max-height: 60px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header .brand-logo,
+  .projects-page .header .brand-logo {
+    width: var(--header-logo-width-small);
+  }
+
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    width: var(--header-logo-width-small) !important;
+    max-height: 64px;
+  }
+}
+
+/* ==============================
+   Ajuste: reduzir logos do cabeçalho em 20%
+   ============================== */
+:root {
+  --header-logo-width-desktop: 308px;
+  --header-logo-width-tablet: 248px;
+  --header-logo-width-mobile: 204px;
+  --header-logo-width-small: 184px;
+}
+
+.header .brand-logo img,
+.header .brand-logo .img-logo,
+.projects-page .header .brand-logo img,
+.projects-page .header .brand-logo .img-logo,
+.projects-page .img-logo {
+  max-height: 72px;
+}
+
+@media (max-width: 980px) {
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    max-height: 58px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    max-height: 48px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    max-height: 51px;
+  }
+}
+
+/* ==============================
+   Ajuste: reduzir logos do cabeçalho em mais 30%
+   ============================== */
+:root {
+  --header-logo-width-desktop: 216px;
+  --header-logo-width-tablet: 174px;
+  --header-logo-width-mobile: 143px;
+  --header-logo-width-small: 129px;
+}
+
+.header .brand-logo img,
+.header .brand-logo .img-logo,
+.projects-page .header .brand-logo img,
+.projects-page .header .brand-logo .img-logo,
+.projects-page .img-logo {
+  max-height: 50px;
+}
+
+@media (max-width: 980px) {
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    max-height: 41px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    max-height: 34px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header .brand-logo img,
+  .header .brand-logo .img-logo,
+  .projects-page .header .brand-logo img,
+  .projects-page .header .brand-logo .img-logo,
+  .projects-page .img-logo {
+    max-height: 36px;
+  }
+}
