@@ -78,13 +78,40 @@
             <h2>Cases com estrutura, design e objetivo comercial.</h2>
           </div>
 
-          <div class="projects-filter" aria-label="Filtrar por categoria">
-            <button class="active" type="button" data-project-filter="Todos">Todos</button>
-            <button type="button" data-project-filter="Sites Institucionais">Sites Institucionais</button>
-            <button type="button" data-project-filter="Landing Pages">Landing Pages</button>
-            <button type="button" data-project-filter="Sistemas">Sistemas</button>
-            <button type="button" data-project-filter="E-commerce">E-commerce</button>
-          </div>
+          <form class="projects-filter" id="projectsFilters" aria-label="Filtrar projetos">
+            <div class="projects-filter__intro">
+              <span class="projects-filter__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" focusable="false">
+                  <path d="M4.5 6.5h15l-6 6.35v4.9l-3 1.75v-6.65L4.5 6.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <div>
+                <strong>Filtrar projetos</strong>
+                <small>Encontre cases por categoria e nicho de atuação.</small>
+              </div>
+            </div>
+
+            <div class="projects-filter__controls">
+              <label class="projects-filter__field" for="projectCategoryFilter">
+                <span>Categoria</span>
+                <select id="projectCategoryFilter" name="category" disabled>
+                  <option value="">Todas as categorias</option>
+                </select>
+              </label>
+
+              <label class="projects-filter__field" for="projectNicheFilter">
+                <span>Nicho</span>
+                <select id="projectNicheFilter" name="niche" disabled>
+                  <option value="">Todos os nichos</option>
+                </select>
+              </label>
+
+              <button class="projects-filter__clear" id="projectClearFilters" type="button" disabled>
+                <span aria-hidden="true">↻</span>
+                Limpar filtros
+              </button>
+            </div>
+          </form>
         </div>
 
         <div class="projects-state projects-state--loading" id="projectsState" role="status">

@@ -11,6 +11,8 @@
 window.CODEXA_PORTFOLIO_API = {
   baseUrl: "https://codexa-portifolio-api.vercel.app",
   publicPath: "/api/v1/portfolio-items",
+  categoriesPath: "/api/v1/categories",
+  nichesPath: "/api/v1/niches",
   status: "published",
   featuredOnly: false,
   limit: 5,
