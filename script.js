@@ -434,3 +434,62 @@ initScrollProgress();
 initCursorGlow();
 initPremiumTilt();
 
+
+
+const THEME_STORAGE_KEY = "codexa-theme";
+const themeToggleButtons = document.querySelectorAll(".theme-toggle");
+const themeLogoImages = document.querySelectorAll("img[data-logo-light][data-logo-dark]");
+
+function getStoredTheme() {
+  try {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "dark";
+  } catch (error) {
+    return "dark";
+  }
+}
+
+function updateThemeLogos(theme) {
+  themeLogoImages.forEach((image) => {
+    const nextSource = image.dataset[theme === "light" ? "logoLight" : "logoDark"];
+    if (nextSource && image.getAttribute("src") !== nextSource) {
+      image.setAttribute("src", nextSource);
+    }
+  });
+}
+
+function updateThemeButtons(theme) {
+  const isLightTheme = theme === "light";
+  themeToggleButtons.forEach((button) => {
+    button.setAttribute("aria-pressed", String(isLightTheme));
+    button.setAttribute("aria-label", isLightTheme ? "Ativar tema escuro" : "Ativar tema claro");
+    button.setAttribute("title", isLightTheme ? "Ativar tema escuro" : "Ativar tema claro");
+  });
+}
+
+function applyTheme(theme, persist = true) {
+  const resolvedTheme = theme === "light" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", resolvedTheme);
+  document.body?.setAttribute("data-theme", resolvedTheme);
+  updateThemeButtons(resolvedTheme);
+  updateThemeLogos(resolvedTheme);
+
+  if (persist) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, resolvedTheme);
+    } catch (error) {
+      /* noop */
+    }
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+  applyTheme(currentTheme === "light" ? "dark" : "light");
+}
+
+applyTheme(getStoredTheme(), false);
+
+themeToggleButtons.forEach((button) => {
+  button.addEventListener("click", toggleTheme);
+});
