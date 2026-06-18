@@ -439,6 +439,7 @@ initPremiumTilt();
 const THEME_STORAGE_KEY = "codexa-theme";
 const themeToggleButtons = document.querySelectorAll(".theme-toggle");
 const themeLogoImages = document.querySelectorAll("img[data-logo-light][data-logo-dark]");
+const themeAssetImages = document.querySelectorAll("img[data-theme-light][data-theme-dark]");
 
 function getStoredTheme() {
   try {
@@ -452,6 +453,15 @@ function getStoredTheme() {
 function updateThemeLogos(theme) {
   themeLogoImages.forEach((image) => {
     const nextSource = image.dataset[theme === "light" ? "logoLight" : "logoDark"];
+    if (nextSource && image.getAttribute("src") !== nextSource) {
+      image.setAttribute("src", nextSource);
+    }
+  });
+}
+
+function updateThemeAssetImages(theme) {
+  themeAssetImages.forEach((image) => {
+    const nextSource = image.dataset[theme === "light" ? "themeLight" : "themeDark"];
     if (nextSource && image.getAttribute("src") !== nextSource) {
       image.setAttribute("src", nextSource);
     }
@@ -473,6 +483,7 @@ function applyTheme(theme, persist = true) {
   document.body?.setAttribute("data-theme", resolvedTheme);
   updateThemeButtons(resolvedTheme);
   updateThemeLogos(resolvedTheme);
+  updateThemeAssetImages(resolvedTheme);
 
   if (persist) {
     try {
