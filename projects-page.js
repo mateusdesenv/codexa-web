@@ -426,18 +426,25 @@ function renderProjectTaxonomies(project) {
 
 function renderProjectCard(project) {
   const safeUrl = escapeProjectHtml(project.projectUrl);
+  const safeTitle = escapeProjectHtml(project.title);
+  const safeDesktopImage = escapeProjectHtml(project.desktopImageUrl);
+  const safeMobileImage = escapeProjectHtml(project.mobileImageUrl || project.desktopImageUrl);
+  const safeAltText = escapeProjectHtml(project.altText);
   const link = project.projectUrl
     ? `<a class="projects-card__link" href="${safeUrl}" target="_blank" rel="noopener">Ver projeto <span>→</span></a>`
     : `<span class="projects-card__link projects-card__link--disabled">Projeto em breve</span>`;
 
   return `
     <article class="projects-card reveal">
-      <a class="projects-card__media" href="${safeUrl || "#"}" ${project.projectUrl ? 'target="_blank" rel="noopener"' : ""} aria-label="Abrir projeto ${escapeProjectHtml(project.title)}">
-        <img src="${escapeProjectHtml(project.desktopImageUrl)}" alt="${escapeProjectHtml(project.altText)}" loading="lazy" />
+      <a class="projects-card__media" href="${safeUrl || "#"}" ${project.projectUrl ? 'target="_blank" rel="noopener"' : ""} aria-label="Abrir projeto ${safeTitle}">
+        <picture>
+          <source media="(max-width: 768px)" srcset="${safeMobileImage}" />
+          <img src="${safeDesktopImage}" alt="${safeAltText}" loading="lazy" />
+        </picture>
       </a>
       <div class="projects-card__content">
         ${renderProjectTaxonomies(project)}
-        <h3>${escapeProjectHtml(project.title)}</h3>
+        <h3>${safeTitle}</h3>
         <p>${escapeProjectHtml(project.shortDescription)}</p>
         ${link}
       </div>
