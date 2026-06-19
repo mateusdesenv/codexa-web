@@ -10,30 +10,60 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../style.css" />
   <link rel="shortcut icon" href="../assets/codexa-app-icon-favicon.png" type="image/x-icon">
+  <script>
+    (function () {
+      try {
+        var storedTheme = localStorage.getItem("codexa-theme");
+        var theme = storedTheme === "light" || storedTheme === "dark"
+          ? storedTheme
+          : "dark";
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (error) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
 </head>
-<body class="projects-page">
+<body class="projects-page" data-theme="dark">
   <header class="header">
     <a href="../" class="brand-logo" aria-label="Codexa">
-      <img class="img-logo" src="../assets/codexa-header-logo.png" alt="Codexa" />
+      <img class="img-logo" src="../assets/codexa-header-logo-reversed.png" data-logo-dark="../assets/codexa-header-logo-reversed.png" data-logo-light="../assets/codexa-header-logo.png" alt="Codexa" />
     </a>
-
-    <button class="menu-button" aria-label="Abrir menu">
-      <span></span>
-      <span></span>
-    </button>
 
     <nav class="nav">
       <a href="../#servicos">Serviços</a>
       <a href="../#sobre">Sobre</a>
       <a href="../#portfolio">Cases</a>
+      <a href="../#depoimentos">Depoimentos</a>
       <a href="./" class="active" aria-current="page">Portfólio</a>
       <a href="../#contato">Contato <i></i></a>
     </nav>
 
-    <a class="top-cta" href="https://wa.me/5548988512030" target="_blank" rel="noopener">
-      <span class="wa-icon">◉</span>
-      Fale conosco
-    </a>
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" aria-label="Ativar tema claro" aria-pressed="false" title="Alternar tema">
+        <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <circle cx="12" cy="12" r="4.2"></circle>
+            <path d="M12 2.2v2.1M12 19.7v2.1M4.84 4.84l1.5 1.5M17.66 17.66l1.5 1.5M2.2 12h2.1M19.7 12h2.1M4.84 19.16l1.5-1.5M17.66 6.34l1.5-1.5"></path>
+          </svg>
+        </span>
+        <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M20.2 14.2A8.5 8.5 0 0 1 9.8 3.8a8.7 8.7 0 1 0 10.4 10.4Z"></path>
+          </svg>
+        </span>
+      </button>
+
+      <a class="top-cta" href="https://wa.me/5548988512030" target="_blank" rel="noopener">
+        <span class="wa-icon">◉</span>
+        Fale conosco
+      </a>
+
+      <button class="menu-button" aria-label="Abrir menu">
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </header>
 
   <main>
@@ -158,7 +188,7 @@
       <div class="footer-premium__main">
         <div class="footer-premium__brand">
           <a href="../" class="footer-premium__logo" aria-label="Voltar para o início">
-            <img src="../assets/codexa-primary-logo-reversed.png" alt="Codexa" />
+            <img src="../assets/codexa-primary-logo-reversed.png" data-logo-dark="../assets/codexa-primary-logo-reversed.png" data-logo-light="../assets/codexa-primary-logo.png" alt="Codexa" />
           </a>
 
           <p>Sites e experiências digitais para marcas que querem <strong>crescer com presença online.</strong></p>
@@ -192,6 +222,7 @@
             <a href="../#inicio">Início</a>
             <a href="../#servicos">Serviços</a>
             <a href="../#portfolio">Cases</a>
+            <a href="../#depoimentos">Depoimentos</a>
             <a href="./">Portfólio</a>
             <a href="../#sobre">Sobre</a>
             <a href="../#contato">Contato</a>
