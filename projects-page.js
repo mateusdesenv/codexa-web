@@ -4,6 +4,7 @@ const projectsFiltersForm = document.getElementById("projectsFilters");
 const projectCategoryFilter = document.getElementById("projectCategoryFilter");
 const projectNicheFilter = document.getElementById("projectNicheFilter");
 const projectClearFilters = document.getElementById("projectClearFilters");
+const featuredProjectsContainer = document.getElementById("featuredProjects");
 
 const configuredPortfolioApi = window.CODEXA_PORTFOLIO_API || {};
 const projectsApiConfig = {
@@ -171,6 +172,7 @@ function buildApiUrl(path, params = {}) {
 function buildProjectsApiUrl() {
   return buildApiUrl(projectsApiConfig.publicPath || "/api/v1/portfolio-items", {
     status: projectsApiConfig.status || "published",
+    showInPortfolio: true,
     limit: projectsApiConfig.limit || 100
   });
 }
@@ -243,20 +245,67 @@ function normalizeStringList(value) {
 
 function normalizeProject(item) {
   const niches = normalizeStringList(item.niches || item.niche || item.tags);
+  const displayMode = item.displayMode || "default";
+  const fallbackTitle = item.title || item.featuredTitle || "Projeto Codexa";
+  const fallbackDesktopImage = item.desktopImageUrl || item.featuredImage || item.mobileImageUrl || "../assets/prototipo-site-codexa.png";
 
   return {
     id: item.id || item.slug || crypto.randomUUID(),
-    title: item.title || "Projeto Codexa",
+    title: fallbackTitle,
+    slug: item.slug || "",
     category: item.category || "Sem categoria",
     niches,
-    shortDescription: item.shortDescription || "Projeto desenvolvido pela Codexa com foco em presença digital e conversão.",
-    projectUrl: item.projectUrl || "",
-    desktopImageUrl: item.desktopImageUrl || item.mobileImageUrl || "../assets/prototipo-site-codexa.png",
-    mobileImageUrl: item.mobileImageUrl || item.desktopImageUrl || "",
-    altText: item.altText || `Projeto ${item.title || "Codexa"}`,
+    shortDescription: item.shortDescription || item.featuredDescription || "Projeto desenvolvido pela Codexa com foco em presença digital e conversão.",
+    projectUrl: item.projectUrl || item.primaryCtaUrl || "",
+    desktopImageUrl: fallbackDesktopImage,
+    mobileImageUrl: item.mobileImageUrl || item.desktopImageUrl || item.featuredImage || "",
+    altText: item.altText || item.featuredImageAlt || `Projeto ${fallbackTitle}`,
     order: Number(item.order || 0),
-    status: item.status || "published"
+    status: item.status || "published",
+    featured: Boolean(item.featured),
+    projectType: item.projectType || "website",
+    displayMode,
+    showInPortfolio: item.showInPortfolio !== false,
+    showInHome: Boolean(item.showInHome),
+    isFilterable: item.isFilterable !== false,
+    featuredLabel: item.featuredLabel || "CASE ESPECIAL",
+    featuredTitle: item.featuredTitle || fallbackTitle,
+    featuredSubtitle: item.featuredSubtitle || "Sistema completo",
+    featuredDescription: item.featuredDescription || item.shortDescription || "Projeto desenvolvido pela Codexa com estrutura completa, estratégia visual e foco em resultado.",
+    featuredImage: item.featuredImage || fallbackDesktopImage,
+    featuredImageAlt: item.featuredImageAlt || item.altText || `Preview do projeto ${fallbackTitle}`,
+    previewUrlLabel: item.previewUrlLabel || extractPreviewLabel(item.primaryCtaUrl || item.projectUrl),
+    previewStyle: item.previewStyle || "browser",
+    featuredTags: normalizeStringList(item.featuredTags || item.tags).slice(0, 6),
+    features: normalizeFeatures(item.features),
+    primaryCtaLabel: item.primaryCtaLabel || "Ver projeto",
+    primaryCtaUrl: item.primaryCtaUrl || item.projectUrl || "",
+    secondaryCtaLabel: item.secondaryCtaLabel || "Entender estrutura",
+    secondaryCtaUrl: item.secondaryCtaUrl || "",
+    openInNewTab: item.openInNewTab !== false
   };
+}
+
+function normalizeFeatures(features) {
+  return Array.isArray(features)
+    ? features
+        .map((feature) => ({
+          icon: feature?.icon || "code",
+          title: String(feature?.title || "").trim(),
+          description: String(feature?.description || "").trim()
+        }))
+        .filter((feature) => feature.title && feature.description)
+        .slice(0, 4)
+    : [];
+}
+
+function extractPreviewLabel(url = "") {
+  try {
+    if (!url) return "";
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch (_error) {
+    return "";
+  }
 }
 
 function normalizeTaxonomyItem(item) {
@@ -403,11 +452,22 @@ function updateFilterControlsState() {
 function getVisibleProjects() {
   return allProjects
     .filter((project) => project.status === "published")
+    .filter((project) => project.showInPortfolio !== false)
+    .filter((project) => project.displayMode !== "featured")
+    .filter((project) => project.isFilterable !== false)
     .filter((project) => matchesAnySelectedValue(project.category, activeFilters.category))
     .filter((project) => {
       if (!activeFilters.niche.length) return true;
       return project.niches.some((niche) => matchesAnySelectedValue(niche, activeFilters.niche));
     })
+    .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+}
+
+function getFeaturedProjects() {
+  return allProjects
+    .filter((project) => project.status === "published")
+    .filter((project) => project.showInPortfolio !== false)
+    .filter((project) => project.displayMode === "featured")
     .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
 }
 
@@ -452,13 +512,111 @@ function renderProjectCard(project) {
   `;
 }
 
+function isExternalUrl(url = "") {
+  return /^https?:\/\//i.test(String(url));
+}
+
+function renderFeaturedIcon(icon = "code") {
+  const icons = {
+    cart: '<path d="M4 5h2l2.2 10.2a2 2 0 0 0 2 1.6h6.9a2 2 0 0 0 1.9-1.4L21 8H7" /><path d="M10 21h.01M18 21h.01" />',
+    grid: '<path d="M5 5h6v6H5zM13 5h6v6h-6zM5 13h6v6H5zM13 13h6v6h-6z" />',
+    database: '<path d="M5 7c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3Z" /><path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7" /><path d="M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" />',
+    flow: '<path d="M18 7h-7a4 4 0 0 0 0 8h1" /><path d="m15 4 3 3-3 3" /><path d="M6 17h7a4 4 0 0 0 0-8h-1" /><path d="m9 20-3-3 3-3" />',
+    shield: '<path d="M12 3 5 6v5c0 4.4 2.8 8.4 7 10 4.2-1.6 7-5.6 7-10V6l-7-3Z" /><path d="m9.5 12 1.8 1.8L15 10" />',
+    chart: '<path d="M4 19V5" /><path d="M4 19h16" /><path d="m7 15 3-3 3 2 5-7" />',
+    settings: '<path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.1 2.1-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-3v-.2a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L6.6 17l.1-.1A1.7 1.7 0 0 0 7 15a1.7 1.7 0 0 0-1.6-1H5v-3h.4A1.7 1.7 0 0 0 7 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 2.1-2.1.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V4h3v.7a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 8l-.1.1A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.6 1h.4v3H21a1.7 1.7 0 0 0-1.6 1Z" />',
+    code: '<path d="m9 18-6-6 6-6" /><path d="m15 6 6 6-6 6" /><path d="m14 4-4 16" />'
+  };
+
+  return `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none">${icons[icon] || icons.code}</svg>`;
+}
+
+function renderFeaturedCta(label, url, className, openInNewTab = true) {
+  if (!label || !url) return "";
+  const external = isExternalUrl(url);
+  const target = external && openInNewTab ? 'target="_blank" rel="noopener"' : "";
+  return `<a class="${className}" href="${escapeProjectHtml(url)}" ${target}>${escapeProjectHtml(label)} <span>→</span></a>`;
+}
+
+function renderFeaturedProjectCard(project) {
+  const safeId = `case-${escapeProjectHtml(project.slug || project.id)}`;
+  const titleId = `${safeId}-title`;
+  const tags = project.featuredTags.length
+    ? project.featuredTags
+    : [project.projectType, project.category].filter(Boolean);
+  const features = project.features.length ? project.features : [
+    { icon: "code", title: "Projeto completo", description: "Estrutura digital planejada para operação, evolução e resultado." },
+    { icon: "chart", title: "Foco comercial", description: "Experiência desenhada para apresentação clara e conversão." }
+  ];
+
+  return `
+    <article class="featured-system-card reveal" id="${safeId}" aria-labelledby="${titleId}">
+      <div class="featured-system-card__content">
+        <div class="featured-system-card__eyebrow">
+          <span aria-hidden="true"></span>
+          ${escapeProjectHtml(project.featuredLabel)}
+        </div>
+
+        <h2 id="${titleId}">${escapeProjectHtml(project.featuredTitle)}</h2>
+
+        <p class="featured-system-card__description">
+          ${escapeProjectHtml(project.featuredDescription)}
+        </p>
+
+        <div class="featured-system-card__chips" aria-label="Tecnologias e módulos do projeto ${escapeProjectHtml(project.featuredTitle)}">
+          ${tags.slice(0, 6).map((tag) => `<span>${escapeProjectHtml(tag)}</span>`).join("")}
+        </div>
+
+        <div class="featured-system-card__actions">
+          ${renderFeaturedCta(project.primaryCtaLabel, project.primaryCtaUrl, "featured-system-card__primary", project.openInNewTab)}
+          ${renderFeaturedCta(project.secondaryCtaLabel, project.secondaryCtaUrl, "featured-system-card__secondary", project.openInNewTab)}
+        </div>
+      </div>
+
+      <div class="featured-system-card__visual" aria-hidden="false">
+        <div class="featured-system-card__browser">
+          <div class="featured-system-card__bar" aria-hidden="true">
+            <span></span><span></span><span></span>
+            <small>${escapeProjectHtml(project.previewUrlLabel || extractPreviewLabel(project.primaryCtaUrl) || project.featuredSubtitle)}</small>
+          </div>
+          <img src="${escapeProjectHtml(project.featuredImage)}" alt="${escapeProjectHtml(project.featuredImageAlt)}" loading="lazy" />
+        </div>
+      </div>
+
+      <div class="featured-system-card__features" aria-label="Principais módulos do projeto ${escapeProjectHtml(project.featuredTitle)}">
+        ${features.map((feature) => `
+          <div class="featured-system-card__feature">
+            ${renderFeaturedIcon(feature.icon)}
+            <strong>${escapeProjectHtml(feature.title)}</strong>
+            <p>${escapeProjectHtml(feature.description)}</p>
+          </div>
+        `).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderFeaturedProjects() {
+  if (!featuredProjectsContainer) return;
+
+  const featuredProjects = getFeaturedProjects();
+  featuredProjectsContainer.hidden = featuredProjects.length === 0;
+  featuredProjectsContainer.innerHTML = featuredProjects.map(renderFeaturedProjectCard).join("");
+
+  featuredProjectsContainer.querySelectorAll(".reveal").forEach((card) => {
+    card.classList.add("active");
+  });
+}
+
 function renderProjects() {
   if (!projectsGrid) return;
 
   const visibleProjects = getVisibleProjects();
+  const featuredProjects = getFeaturedProjects();
   projectsGrid.innerHTML = "";
 
   if (!allProjects.length) {
+    renderFeaturedProjects();
     showProjectsState(
       "empty",
       "Nenhum projeto publicado",
@@ -467,7 +625,8 @@ function renderProjects() {
     return;
   }
 
-  if (!visibleProjects.length) {
+  if (!visibleProjects.length && !featuredProjects.length) {
+    renderFeaturedProjects();
     showProjectsState(
       "empty",
       "Nenhum projeto encontrado",
@@ -478,6 +637,7 @@ function renderProjects() {
 
   hideProjectsState();
   projectsGrid.innerHTML = visibleProjects.map(renderProjectCard).join("");
+  renderFeaturedProjects();
 
   const cards = projectsGrid.querySelectorAll(".reveal");
   cards.forEach((card) => {
