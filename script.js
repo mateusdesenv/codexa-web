@@ -57,6 +57,7 @@ const defaultPortfolioApiConfig = {
   publicPath: "/api/v1/portfolio-items",
   status: "published",
   featuredOnly: false,
+  showInHomeOnly: true,
   limit: 5,
   timeout: 15000
 };
@@ -94,6 +95,10 @@ function buildPortfolioApiUrl() {
 
   if (portfolioApiConfig.featuredOnly) {
     url.searchParams.set("featured", "true");
+  }
+
+  if (portfolioApiConfig.showInHomeOnly !== false) {
+    url.searchParams.set("showInHome", "true");
   }
 
   if (portfolioApiConfig.limit) {
@@ -202,7 +207,7 @@ function renderPortfolioItems(items = []) {
   if (!portfolioStage) return;
 
   const sortedItems = [...items]
-    .filter((item) => item && item.status === "published")
+    .filter((item) => item && item.status === "published" && (item.showInHome === true || item.showInHome === "true"))
     .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
 
   if (!sortedItems.length) {
