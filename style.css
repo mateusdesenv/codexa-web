@@ -6792,7 +6792,14 @@ html[data-theme="light"] .projects-page .header {
 }
 
 /* ==============================
-   Case especial — Tech Tees Brasil
+   Cases especiais dinâmicos
+   ============================== */
+.featured-projects {
+  width: 100%;
+}
+
+/* ==============================
+   Case especial — Projeto full width
    ============================== */
 .featured-system-card {
   position: relative;
