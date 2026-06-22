@@ -52,6 +52,17 @@ function normalizeProjectBaseUrl(url = "") {
   return String(url).replace(/\/+$/, "");
 }
 
+function resolveProjectImageUrl(value = "") {
+  const image = String(value || "").trim();
+  if (!image) return "";
+  if (/^(?:https?:|data:|blob:)/i.test(image)) return image;
+  try {
+    return new URL(image, `${normalizeProjectBaseUrl(projectsApiConfig.baseUrl)}/`).toString();
+  } catch (_error) {
+    return "";
+  }
+}
+
 function escapeProjectHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -247,7 +258,7 @@ function normalizeProject(item) {
   const niches = normalizeStringList(item.niches || item.niche || item.tags);
   const displayMode = item.displayMode || "default";
   const fallbackTitle = item.title || item.featuredTitle || "Projeto Codexa";
-  const fallbackDesktopImage = item.desktopImageUrl || item.featuredImage || item.mobileImageUrl || "../assets/prototipo-site-codexa.png";
+  const fallbackDesktopImage = resolveProjectImageUrl(item.desktopImageUrl || item.featuredImage || item.mobileImageUrl);
 
   return {
     id: item.id || item.slug || crypto.randomUUID(),
@@ -258,7 +269,7 @@ function normalizeProject(item) {
     shortDescription: item.shortDescription || item.featuredDescription || "Projeto desenvolvido pela Codexa com foco em presença digital e conversão.",
     projectUrl: item.projectUrl || item.primaryCtaUrl || "",
     desktopImageUrl: fallbackDesktopImage,
-    mobileImageUrl: item.mobileImageUrl || item.desktopImageUrl || item.featuredImage || "",
+    mobileImageUrl: resolveProjectImageUrl(item.mobileImageUrl || item.desktopImageUrl || item.featuredImage),
     altText: item.altText || item.featuredImageAlt || `Projeto ${fallbackTitle}`,
     order: Number(item.order || 0),
     status: item.status || "published",
@@ -272,7 +283,7 @@ function normalizeProject(item) {
     featuredTitle: item.featuredTitle || fallbackTitle,
     featuredSubtitle: item.featuredSubtitle || "Sistema completo",
     featuredDescription: item.featuredDescription || item.shortDescription || "Projeto desenvolvido pela Codexa com estrutura completa, estratégia visual e foco em resultado.",
-    featuredImage: item.featuredImage || fallbackDesktopImage,
+    featuredImage: resolveProjectImageUrl(item.featuredImage || item.desktopImageUrl || item.mobileImageUrl),
     featuredImageAlt: item.featuredImageAlt || item.altText || `Preview do projeto ${fallbackTitle}`,
     previewUrlLabel: item.previewUrlLabel || extractPreviewLabel(item.primaryCtaUrl || item.projectUrl),
     previewStyle: item.previewStyle || "browser",
@@ -484,6 +495,10 @@ function renderProjectTaxonomies(project) {
   `;
 }
 
+function renderProjectsImageFallback(title) {
+  return `<div class="project-image-fallback" role="img" aria-label="Imagem não cadastrada para ${escapeProjectHtml(title)}"><span>${escapeProjectHtml(title)}</span></div>`;
+}
+
 function renderProjectCard(project) {
   const safeUrl = escapeProjectHtml(project.projectUrl);
   const safeTitle = escapeProjectHtml(project.title);
@@ -497,10 +512,10 @@ function renderProjectCard(project) {
   return `
     <article class="projects-card reveal">
       <a class="projects-card__media" href="${safeUrl || "#"}" ${project.projectUrl ? 'target="_blank" rel="noopener"' : ""} aria-label="Abrir projeto ${safeTitle}">
-        <picture>
+        ${project.desktopImageUrl ? `<picture data-project-image>
           <source media="(max-width: 768px)" srcset="${safeMobileImage}" />
           <img src="${safeDesktopImage}" alt="${safeAltText}" loading="lazy" />
-        </picture>
+        </picture>` : renderProjectsImageFallback(project.title)}
       </a>
       <div class="projects-card__content">
         ${renderProjectTaxonomies(project)}
@@ -579,7 +594,9 @@ function renderFeaturedProjectCard(project) {
             <span></span><span></span><span></span>
             <small>${escapeProjectHtml(project.previewUrlLabel || extractPreviewLabel(project.primaryCtaUrl) || project.featuredSubtitle)}</small>
           </div>
-          <img src="${escapeProjectHtml(project.featuredImage)}" alt="${escapeProjectHtml(project.featuredImageAlt)}" loading="lazy" />
+          ${project.featuredImage
+            ? `<img data-project-image src="${escapeProjectHtml(project.featuredImage)}" alt="${escapeProjectHtml(project.featuredImageAlt)}" loading="lazy" />`
+            : renderProjectsImageFallback(project.featuredTitle)}
         </div>
       </div>
 
@@ -607,6 +624,27 @@ function renderFeaturedProjects() {
     card.classList.add("active");
   });
 }
+
+function replaceBrokenProjectImage(image) {
+  const target = image.closest("picture") || image;
+  const card = image.closest(".projects-card, .featured-system-card");
+  const title = card?.querySelector("h2, h3")?.textContent || "Projeto Codexa";
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = renderProjectsImageFallback(title);
+  target.replaceWith(wrapper.firstElementChild);
+}
+
+projectsGrid?.addEventListener("error", (event) => {
+  if (event.target instanceof HTMLImageElement && event.target.matches("[data-project-image], [data-project-image] img")) {
+    replaceBrokenProjectImage(event.target);
+  }
+}, true);
+
+featuredProjectsContainer?.addEventListener("error", (event) => {
+  if (event.target instanceof HTMLImageElement && event.target.matches("[data-project-image]")) {
+    replaceBrokenProjectImage(event.target);
+  }
+}, true);
 
 function renderProjects() {
   if (!projectsGrid) return;
@@ -747,6 +785,7 @@ async function loadProjectsPage() {
     applyFiltersFromUrl();
     renderProjects();
   } catch (error) {
+    console.error('[Codexa Portfolio] Falha ao carregar projetos:', error);
     const isAbort = error?.name === "AbortError";
     showProjectsState(
       "error",

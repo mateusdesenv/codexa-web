@@ -84,6 +84,21 @@ function normalizeBaseUrl(url = "") {
   return String(url).replace(/\/+$/, "");
 }
 
+function resolvePortfolioImageUrl(value = "") {
+  const image = String(value || "").trim();
+  if (!image) return "";
+  if (/^(?:https?:|data:|blob:)/i.test(image)) return image;
+  try {
+    return new URL(image, `${normalizeBaseUrl(portfolioApiConfig.baseUrl)}/`).toString();
+  } catch (_error) {
+    return "";
+  }
+}
+
+function renderPortfolioImageFallback(title) {
+  return `<div class="project-image-fallback" role="img" aria-label="Imagem não cadastrada para ${escapeHtml(title)}"><span>${escapeHtml(title)}</span></div>`;
+}
+
 function buildPortfolioApiUrl() {
   const baseUrl = normalizeBaseUrl(portfolioApiConfig.baseUrl);
   const path = portfolioApiConfig.publicPath || "/api/v1/portfolio-items";
@@ -164,8 +179,8 @@ function createPortfolioCard(item, index) {
   const title = item.title || "Projeto Codexa";
   const description = item.shortDescription || "Projeto desenvolvido pela Codexa.";
   const projectUrl = item.projectUrl || "#";
-  const desktopImage = item.desktopImageUrl || item.mobileImageUrl || "assets/prototipo-site-codexa.png";
-  const mobileImage = item.mobileImageUrl || item.desktopImageUrl || desktopImage;
+  const desktopImage = resolvePortfolioImageUrl(item.desktopImageUrl || item.featuredImage || item.mobileImageUrl);
+  const mobileImage = resolvePortfolioImageUrl(item.mobileImageUrl || item.desktopImageUrl || item.featuredImage);
   const altText = item.altText || `Projeto ${title}`;
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
@@ -185,10 +200,10 @@ function createPortfolioCard(item, index) {
       <a href="${safeProjectUrl}" target="_blank" rel="noopener">Abrir ↗</a>
     </div>
     <div class="project-screen">
-      <picture>
+      ${desktopImage ? `<picture data-project-image>
         <source media="(max-width: 768px)" srcset="${safeMobileImage}" />
         <img src="${safeDesktopImage}" alt="${safeAltText}" loading="lazy" />
-      </picture>
+      </picture>` : renderPortfolioImageFallback(title)}
     </div>
     <div class="mobile-project-info">
       <span class="mobile-project-number">${number}</span>
@@ -202,6 +217,17 @@ function createPortfolioCard(item, index) {
 
   return article;
 }
+
+portfolioStage?.addEventListener("error", (event) => {
+  if (!(event.target instanceof HTMLImageElement)) return;
+  const picture = event.target.closest("[data-project-image]");
+  if (!picture) return;
+  const card = event.target.closest(".project-window");
+  const title = card?.querySelector(".window-bar p")?.textContent || "Projeto Codexa";
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = renderPortfolioImageFallback(title);
+  picture.replaceWith(wrapper.firstElementChild);
+}, true);
 
 function renderPortfolioItems(items = []) {
   if (!portfolioStage) return;
@@ -255,6 +281,7 @@ async function loadPortfolioFromApi() {
 
     renderPortfolioItems(Array.isArray(result?.data) ? result.data : []);
   } catch (error) {
+    console.error('[Codexa Portfolio] Falha ao carregar os cases da home:', error);
     const isAbort = error?.name === "AbortError";
     renderPortfolioState(
       "error",
